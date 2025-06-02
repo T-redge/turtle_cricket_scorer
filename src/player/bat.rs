@@ -12,6 +12,7 @@ impl Bat {
     pub fn add_ball_faced(&mut self) {
         self.player_balls += 1;
     }
+
     pub fn add_run_scored(&mut self, amt: u16) {
         self.player_runs += amt;
     }

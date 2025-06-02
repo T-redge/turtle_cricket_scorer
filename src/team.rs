@@ -23,6 +23,14 @@ impl Team {
         }
     }
     //Changing fields functions
+    pub fn add_dot_ball(&mut self) {
+        self.team_balls += 1;
+        self.player_1.add_ball_faced();
+    }
+    pub fn add_dot_bowled(&mut self) {
+        
+        self.player_1.add_ball_bowled();
+    }
     pub fn add_team_runs(&mut self, amt: u16) {
         self.team_runs += amt;
     }

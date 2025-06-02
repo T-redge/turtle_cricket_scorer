@@ -34,10 +34,14 @@ pub enum WicketEvents {
 
 pub fn match_ball_event(scoreboard: &mut Scoreboard) {
     let event = scoreboard.return_ball_event();
+    let t1 = &mut scoreboard.team_1;
+    let t2 = &mut scoreboard.team_2;
     match event {
         BallEvent::EventWaiting => {}
         BallEvent::EventDot => {
-            println!("Dot")
+            println!("Dot");
+            t1.add_dot_ball();
+            t2.add_dot_bowled();
         }
         BallEvent::EventRuns(_ev) => {
             println!("Runs")
@@ -52,11 +56,13 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
     scoreboard.set_ball_bowled();
 }
 //Score Displays
-pub fn scores(ui: &mut Ui, team: &Team) {
-    team_scores(ui, team);
-    batter_scores(ui, team);
-    bowler_scores(ui, team);
-    extra_scores(ui, team);
+pub fn scores(ui: &mut Ui, scoreboard: &Scoreboard) {
+    let t1 = &scoreboard.team_1;
+    let t2 = &scoreboard.team_2;
+    team_scores(ui, t1);
+    batter_scores(ui, t1);
+    bowler_scores(ui, t2);
+    extra_scores(ui, t1);
 }
 pub fn team_scores(ui: &mut Ui, team: &Team) {
     let (tm_nm, overs) = team.return_team_score();

@@ -15,6 +15,11 @@ impl Bowl {
             player_wickets: 0,
         }
     }
+//Change fields
+    pub fn add_ball_bowled(&mut self) {
+        self.player_balls += 1;
+    }
+//Return Functions
     pub fn return_bowling_figures(&self) -> String {
         let mut bowl_figure = self.player_overs.to_string();
         bowl_figure.push_str(".");

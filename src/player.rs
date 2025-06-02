@@ -17,6 +17,9 @@ impl Player {
     pub fn add_ball_faced(&mut self) {
         self.bat_profile.add_ball_faced();
     }
+    pub fn add_ball_bowled(&mut self) {
+        self.bowl_profile.add_ball_bowled();
+    }
     pub fn add_run_scored(&mut self, amt: u16) {
         self.bat_profile.add_run_scored(amt);
     }

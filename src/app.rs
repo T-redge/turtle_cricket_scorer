@@ -4,6 +4,8 @@ pub struct Scoreboard {
     hide_extra_button: bool,
     ball_event: BallEvent,
     ball_bowled: bool,
+    pub team_1: Team,
+    pub team_2: Team,
 }
 impl Scoreboard {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
@@ -11,6 +13,8 @@ impl Scoreboard {
             hide_extra_button: false,
             ball_event: BallEvent::EventWaiting,
             ball_bowled: false,
+            team_1: Team::new("Edgewater"),
+            team_2: Team::new("Kingsway"),
         }
     }
     pub fn set_hide_button_bool(&mut self) {
@@ -37,7 +41,7 @@ impl Scoreboard {
 }
 impl eframe::App for Scoreboard {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let team_1 = Team::new("Edgewater");
+       
         if self.ball_bowled {
             match_ball_event(self);
         }
@@ -45,7 +49,7 @@ impl eframe::App for Scoreboard {
             buttons(ui, self);
         });
         egui::CentralPanel::default().show(ctx, |ui| {
-            scores(ui, &team_1);
+            scores(ui, self);
         });
     }
 }
