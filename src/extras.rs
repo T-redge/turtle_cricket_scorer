@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Extras {
     wide: u8,
     noball: u8,

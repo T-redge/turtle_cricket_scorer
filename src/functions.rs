@@ -40,17 +40,48 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
         BallEvent::EventWaiting => {}
         BallEvent::EventDot => {
             println!("Dot");
-            t1.add_dot_ball();
-            t2.add_dot_bowled();
+            match_team_roles(t1);
+            match_team_roles(t2);
         }
-        BallEvent::EventRuns(_ev) => {
-            println!("Runs")
+        BallEvent::EventRuns(ev) => {
+            match ev {
+                RunsEvent::OneScored(_runs) => {
+                    println!("One Run");
+                    match_team_roles(t1);
+                    match_team_roles(t2);
+                }
+                RunsEvent::TwoScored(_runs) => {
+                    println!("Two Runs");
+                    match_team_roles(t1);
+                    match_team_roles(t2);
+                }
+                RunsEvent::ThreeScored(_runs) => {
+                    println!("Three Runs");
+                    match_team_roles(t1);
+                    match_team_roles(t2);
+                }
+                RunsEvent::FourScored(_runs) => {
+                    println!("Four Runs");
+                    match_team_roles(t1);
+                    match_team_roles(t2);
+                }
+                RunsEvent::SixScored(_runs) => {
+                    println!("Six Runs");
+                    match_team_roles(t1);
+                    match_team_roles(t2);
+                }
+            }
+
         }
         BallEvent::EventExtras(_ev) => {
-            println!("Extras")
+            println!("Extras");
+            match_team_roles(t1);
+            match_team_roles(t2);
         }
         BallEvent::EventWicket(_ev) => {
-            println!("Wicket")
+            println!("Wicket");
+            match_team_roles(t1);
+            match_team_roles(t2);
         }
     }
     scoreboard.set_ball_bowled();
@@ -58,10 +89,10 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
 //Score Displays
 pub fn scores(ui: &mut Ui, scoreboard: &Scoreboard) {
     let t1 = &scoreboard.team_1;
-    let t2 = &scoreboard.team_2;
+    let _t2 = &scoreboard.team_2;
     team_scores(ui, t1);
     batter_scores(ui, t1);
-    bowler_scores(ui, t2);
+    //bowler_scores(ui, t2);
     extra_scores(ui, t1);
 }
 pub fn team_scores(ui: &mut Ui, team: &Team) {
@@ -84,8 +115,7 @@ pub fn team_scores(ui: &mut Ui, team: &Team) {
     });
 }
 pub fn batter_scores(ui: &mut Ui, team: &Team) {
-    let (b1, b2) = team.return_player_names();
-    let (b1_bat, b2_bat) = team.return_players_bat_profile();
+    let (b1,b2) = team.return_player_at_middle();
     ui.add(Label::new(
         RichText::new("\nBatters\n")
             .color(Color32::WHITE)
@@ -96,14 +126,14 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
     ui.columns_const(|[ui_1, ui_2]| {
         ui_1.horizontal_wrapped(|ui| {
             ui.add(Label::new(
-                RichText::new(b1)
+                RichText::new(b1.return_player_name())
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
             ));
             ui.end_row();
             ui.add(Label::new(
-                RichText::new(b2)
+                RichText::new(b2.return_player_name())
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
@@ -111,14 +141,14 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
         });
         ui_2.horizontal_wrapped(|ui| {
             ui.add(Label::new(
-                RichText::new(b1_bat)
+                RichText::new(b1.return_player_bat_profile())
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
             ));
             ui.end_row();
             ui.add(Label::new(
-                RichText::new(b2_bat)
+                RichText::new(b2.return_player_bat_profile())
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
@@ -126,7 +156,7 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
         });
     });
 }
-pub fn bowler_scores(ui: &mut Ui, team: &Team) {
+/*pub fn bowler_scores(ui: &mut Ui, team: &Team) {
     let (b1, b2) = team.return_player_names();
     let (b1_bowl, b2_bowl) = team.return_players_bowl_profile();
     ui.add(Label::new(
@@ -168,7 +198,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
             });
         });
     });
-}
+}*/
 pub fn extra_scores(ui: &mut Ui, team: &Team) {
     let extras = team.return_extras();
     ui.horizontal(|ui| {
@@ -613,4 +643,15 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
             });
         },
     );
+}
+
+pub fn match_team_roles(team: &mut Team) {
+    match team.return_team_role() {
+        TeamRole::BattingTeam => {
+            println!("{} is batting", team.return_team_name());
+        }
+        TeamRole::BowlingTeam => {
+            println!("{} is bowling", team.return_team_name());
+        }
+    }
 }

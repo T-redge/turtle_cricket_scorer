@@ -1,3 +1,4 @@
+#[derive(Debug,Copy,Clone)]
 pub struct Bowl {
     player_overs: u8,
     player_balls: u8,
