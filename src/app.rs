@@ -1,5 +1,5 @@
-use crate::{functions::*, player::PlayerStatus, team::*};
-use eframe::egui::{self, Align2, Button, Checkbox,Vec2};
+use crate::{functions::*, player::*, team::*};
+use eframe::egui::{self, Align2, Button, Checkbox, Vec2, Ui};
 pub struct Scoreboard {
     hide_extra_button: bool,
     ball_event: BallEvent,
@@ -7,7 +7,9 @@ pub struct Scoreboard {
     pub team_1: Team,
     pub team_2: Team,
     batters_picked: bool,
-    pub checklist_bool: Vec<bool>,
+    bowler_picked: bool,
+    pub checklist_bat: Vec<bool>,
+    checklist_bowl: Vec<bool>,
 }
 impl Scoreboard {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
@@ -18,7 +20,9 @@ impl Scoreboard {
             team_1: Team::new("Edgewater", TeamRole::BattingTeam),
             team_2: Team::new("Kingsway", TeamRole::BowlingTeam),
             batters_picked: false,
-            checklist_bool: vec![false; 12],
+            bowler_picked: false,
+            checklist_bat: vec![false; 12],
+            checklist_bowl: vec![false; 12],
         }
     }
     pub fn set_hide_button_bool(&mut self) {
@@ -50,41 +54,27 @@ impl eframe::App for Scoreboard {
         }
         if !self.batters_picked {
             egui::Window::new("Choose Batters")
-                .anchor(Align2::CENTER_CENTER, [0.0,0.0])
-                .default_size([500.0,300.0])
+                .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+                .default_size([500.0, 300.0])
                 .movable(false)
                 .collapsible(false)
-                .show(ctx,|ui|{
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[0], self.team_1.return_player_names(0)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[1], self.team_1.return_player_names(1)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[2], self.team_1.return_player_names(2)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[3], self.team_1.return_player_names(3)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[4], self.team_1.return_player_names(4)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[5], self.team_1.return_player_names(5)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[6], self.team_1.return_player_names(6)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[7], self.team_1.return_player_names(7)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[8], self.team_1.return_player_names(8)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[9], self.team_1.return_player_names(9)));
-                    ui.add(Checkbox::new(
-                        &mut self.checklist_bool[10], self.team_1.return_player_names(10)));
-                    for x in 0..=10 {
-                        if self.checklist_bool[x] {
-                            self.team_1.set_player_status(x, PlayerStatus::InTheMiddle);
-                        }
-                    }
-                    if ui.add_sized(Vec2{x: 150.0, y:50.0}, Button::new("Select Batters")).clicked() {
-                        self.batters_picked = true;
-                    }
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.columns_const(|[_ui_1,ui_2,_ui_3]| {
+                        get_opening_batters(ui_2, self);
+                    });
+                });
+        } else if !self.bowler_picked {
+            egui::Window::new("Choose Bowler")
+                .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+                .default_size([500.0, 300.0])
+                .movable(false)
+                .collapsible(false)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    ui.columns_const(|[_ui_1,ui_2,_ui_3]| {
+                        get_bowler(ui_2, self);
+                    });
                 });
         } else {
             egui::TopBottomPanel::bottom("id_buttons").show(ctx, |ui| {
@@ -96,4 +86,117 @@ impl eframe::App for Scoreboard {
         }
     }
 }
-
+pub fn get_opening_batters(ui: &mut Ui, scoreboard: &mut Scoreboard) {
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[0],
+        scoreboard.team_1.return_player_names(0),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[1],
+        scoreboard.team_1.return_player_names(1),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[2],
+        scoreboard.team_1.return_player_names(2),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[3],
+        scoreboard.team_1.return_player_names(3),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[4],
+        scoreboard.team_1.return_player_names(4),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[5],
+        scoreboard.team_1.return_player_names(5),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[6],
+        scoreboard.team_1.return_player_names(6),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[7],
+        scoreboard.team_1.return_player_names(7),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[8],
+        scoreboard.team_1.return_player_names(8),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[9],
+        scoreboard.team_1.return_player_names(9),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bat[10],
+        scoreboard.team_1.return_player_names(10),
+    ));
+    for x in 0..=10 {
+        if scoreboard.checklist_bat[x] {
+            scoreboard.team_1.set_player_bat_status(x, PlayerBatStatus::InTheMiddle);
+        }
+    }
+    if ui
+        .add_sized(Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Batters"))
+        .clicked()
+    {
+        scoreboard.batters_picked = true;
+    }
+}
+pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[0],
+        scoreboard.team_2.return_player_names(0),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[1],
+        scoreboard.team_2.return_player_names(1),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[2],
+        scoreboard.team_2.return_player_names(2),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[3],
+        scoreboard.team_2.return_player_names(3),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[4],
+        scoreboard.team_2.return_player_names(4),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[5],
+        scoreboard.team_2.return_player_names(5),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[6],
+        scoreboard.team_2.return_player_names(6),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[7],
+        scoreboard.team_2.return_player_names(7),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[8],
+        scoreboard.team_2.return_player_names(8),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[9],
+        scoreboard.team_2.return_player_names(9),
+    ));
+    ui.add(Checkbox::new(
+        &mut scoreboard.checklist_bowl[10],
+        scoreboard.team_2.return_player_names(10),
+    ));
+    for x in 0..=10 {
+        if scoreboard.checklist_bowl[x] {
+            scoreboard.team_2.set_player_bowl_status(x, PlayerBowlStatus::IsBowling);
+        }
+    }
+    if ui
+        .add_sized(Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Bowler"))
+        .clicked()
+    {
+        scoreboard.bowler_picked = true;
+    }
+}

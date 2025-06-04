@@ -1,4 +1,4 @@
-#[derive(Debug,Copy,Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bat {
     player_runs: u16,
     player_balls: u16,

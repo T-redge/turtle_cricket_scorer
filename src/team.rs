@@ -1,6 +1,12 @@
-use crate::{extras::Extras, player::{Player, PlayerStatus}};
-use std::{fs,io::{BufRead, BufReader}};
-#[derive(Debug,Clone, Copy)]
+use crate::{
+    extras::Extras,
+    player::*,
+};
+use std::{
+    fs,
+    io::{BufRead, BufReader},
+};
+#[derive(Debug, Clone, Copy)]
 pub enum TeamRole {
     BattingTeam,
     BowlingTeam,
@@ -14,7 +20,7 @@ pub struct Team {
     team_balls: u8,
     team_role: TeamRole,
     team_extras: Extras,
-    team_player: Box<Vec<Player>>
+    team_player: Box<Vec<Player>>,
 }
 impl Team {
     pub fn new(team_name: &str, team_role: TeamRole) -> Self {
@@ -30,8 +36,11 @@ impl Team {
             team_player: Box::new(player_list),
         }
     }
-    pub fn set_player_status(&mut self, player: usize, p_status: PlayerStatus) {
-        self.team_player[player].set_player_status(p_status);
+    pub fn set_player_bat_status(&mut self, player: usize, p_status: PlayerBatStatus) {
+        self.team_player[player].set_player_bat_status(p_status);
+    }
+    pub fn set_player_bowl_status(&mut self, player: usize, p_status: PlayerBowlStatus) {
+        self.team_player[player].set_player_bowl_status(p_status);
     }
     //Changing fields functions
     pub fn add_team_runs(&mut self, amt: u16) {
@@ -41,15 +50,18 @@ impl Team {
         self.team_wickets += 1;
     }
     //Return functions
-    pub fn return_player_role(&self, player: usize) -> PlayerStatus {
-        self.team_player[player].return_player_status()
+    pub fn return_player_bat_status(&self, player: usize) -> PlayerBatStatus {
+        self.team_player[player].return_player_bat_status()
     }
-    pub fn return_player_at_middle(&self) -> (Player,Player) {
+    pub fn return_player_bowl_status(&self, player: usize) -> PlayerBowlStatus {
+        self.team_player[player].return_player_bowl_status()
+    }
+    pub fn return_player_at_middle(&self) -> (Player, Player) {
         let mut b1_count = 0;
         let mut b2_count = 0;
         'b1: loop {
-            match self.team_player[b1_count].return_player_status() {
-                PlayerStatus::InTheMiddle => break 'b1,
+            match self.team_player[b1_count].return_player_bat_status() {
+                PlayerBatStatus::InTheMiddle => break 'b1,
                 _ => {}
             }
             b1_count += 1;
@@ -58,16 +70,16 @@ impl Team {
             if b1_count == b2_count {
                 b2_count += 1;
             }
-            match self.team_player[b1_count].return_player_status() {
-                PlayerStatus::InTheMiddle => break 'b2,
+            match self.team_player[b1_count].return_player_bat_status() {
+                PlayerBatStatus::InTheMiddle => break 'b2,
                 _ => {}
             }
             b2_count += 1;
         }
         let b1 = self.team_player[b1_count].clone();
         let b2 = self.team_player[b2_count].clone();
-        
-        (b1,b2)
+
+        (b1, b2)
     }
     pub fn return_team_score(&self) -> (String, String) {
         let mut team_total = self.team_name.to_string();
@@ -106,24 +118,24 @@ impl Team {
     }
 }
 pub fn load_team_list(team_name: &str) -> (String, Vec<Player>) {
-        let mut tmp = Vec::new();
-        let mut file_path = String::from("teamlists/");
-        file_path.push_str(&team_name.to_ascii_lowercase());
-        file_path.push_str(".txt");
-        println!("{file_path}");
-        let t_list = fs::File::open(file_path).unwrap();
-        let buf_reader = BufReader::new(t_list);
-        for line in buf_reader.lines() {
-            tmp.push(line.unwrap());
-        }
+    let mut tmp = Vec::new();
+    let mut file_path = String::from("teamlists/");
+    file_path.push_str(&team_name.to_ascii_lowercase());
+    file_path.push_str(".txt");
+    println!("{file_path}");
+    let t_list = fs::File::open(file_path).unwrap();
+    let buf_reader = BufReader::new(t_list);
+    for line in buf_reader.lines() {
+        tmp.push(line.unwrap());
+    }
 
-        let mut tmp_plyr:Vec<Player> = Vec::new();
-        let tm_name = tmp[0].clone();
-        for x in 1..=11 {
-            tmp_plyr.push(Player::new(&tmp[x].to_owned()));    
-        } 
-        println!("{}", team_name);
-        println!("{:#?}", tmp_plyr);
-        
-        (tm_name, tmp_plyr)
+    let mut tmp_plyr: Vec<Player> = Vec::new();
+    let tm_name = tmp[0].clone();
+    for x in 1..=11 {
+        tmp_plyr.push(Player::new(&tmp[x].to_owned()));
+    }
+    println!("{}", team_name);
+    println!("{:#?}", tmp_plyr);
+
+    (tm_name, tmp_plyr)
 }

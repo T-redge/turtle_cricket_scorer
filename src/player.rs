@@ -1,30 +1,33 @@
 pub mod bat;
 pub mod bowl;
 use crate::player::{bat::*, bowl::*};
-#[derive(Debug,Copy,Clone)]
-pub enum PlayerStatus {
+#[derive(Debug, Copy, Clone)]
+pub enum PlayerBatStatus {
     WaitingToBat,
     InTheMiddle,
     Dismissed,
 }
-#[derive(Debug,Copy,Clone)]
+#[derive(Debug, Copy, Clone)]
 
-pub enum PlayerRole {
-    IsBatting,
-    IsBowling
+pub enum PlayerBowlStatus {
+    WaitingToBowl,
+    IsBowling,
+    BowledLastOver,
 }
-#[derive(Debug,Copy,Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum PlayerStrike {
     OnStrike,
     OffStrike,
 }
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 
 pub struct Player {
     player_name: String,
     bat_profile: Bat,
     bowl_profile: Bowl,
-    player_status: PlayerStatus,
+    player_bat_status: PlayerBatStatus,
+    player_bowl_status: PlayerBowlStatus,
+
 }
 impl Player {
     pub fn new(player_name: &str) -> Self {
@@ -32,14 +35,21 @@ impl Player {
             player_name: player_name.to_owned(),
             bat_profile: Bat::new(),
             bowl_profile: Bowl::new(),
-            player_status: PlayerStatus::WaitingToBat,
+            player_bat_status: PlayerBatStatus::WaitingToBat,
+            player_bowl_status: PlayerBowlStatus::WaitingToBowl,
         }
     }
-    pub fn set_player_status(&mut self, p_status: PlayerStatus) {
-        self.player_status = p_status;
+    pub fn set_player_bat_status(&mut self, p_status: PlayerBatStatus) {
+        self.player_bat_status = p_status;
     }
-    pub fn return_player_status(&self) -> PlayerStatus {
-        self.player_status
+    pub fn set_player_bowl_status(&mut self, p_status: PlayerBowlStatus) {
+        self.player_bowl_status = p_status;
+    }
+    pub fn return_player_bat_status(&self) -> PlayerBatStatus {
+        self.player_bat_status
+    }
+    pub fn return_player_bowl_status(&self) -> PlayerBowlStatus {
+        self.player_bowl_status
     }
     pub fn add_ball_faced(&mut self) {
         self.bat_profile.add_ball_faced();

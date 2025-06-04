@@ -43,36 +43,33 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
             match_team_roles(t1);
             match_team_roles(t2);
         }
-        BallEvent::EventRuns(ev) => {
-            match ev {
-                RunsEvent::OneScored(_runs) => {
-                    println!("One Run");
-                    match_team_roles(t1);
-                    match_team_roles(t2);
-                }
-                RunsEvent::TwoScored(_runs) => {
-                    println!("Two Runs");
-                    match_team_roles(t1);
-                    match_team_roles(t2);
-                }
-                RunsEvent::ThreeScored(_runs) => {
-                    println!("Three Runs");
-                    match_team_roles(t1);
-                    match_team_roles(t2);
-                }
-                RunsEvent::FourScored(_runs) => {
-                    println!("Four Runs");
-                    match_team_roles(t1);
-                    match_team_roles(t2);
-                }
-                RunsEvent::SixScored(_runs) => {
-                    println!("Six Runs");
-                    match_team_roles(t1);
-                    match_team_roles(t2);
-                }
+        BallEvent::EventRuns(ev) => match ev {
+            RunsEvent::OneScored(_runs) => {
+                println!("One Run");
+                match_team_roles(t1);
+                match_team_roles(t2);
             }
-
-        }
+            RunsEvent::TwoScored(_runs) => {
+                println!("Two Runs");
+                match_team_roles(t1);
+                match_team_roles(t2);
+            }
+            RunsEvent::ThreeScored(_runs) => {
+                println!("Three Runs");
+                match_team_roles(t1);
+                match_team_roles(t2);
+            }
+            RunsEvent::FourScored(_runs) => {
+                println!("Four Runs");
+                match_team_roles(t1);
+                match_team_roles(t2);
+            }
+            RunsEvent::SixScored(_runs) => {
+                println!("Six Runs");
+                match_team_roles(t1);
+                match_team_roles(t2);
+            }
+        },
         BallEvent::EventExtras(_ev) => {
             println!("Extras");
             match_team_roles(t1);
@@ -115,7 +112,7 @@ pub fn team_scores(ui: &mut Ui, team: &Team) {
     });
 }
 pub fn batter_scores(ui: &mut Ui, team: &Team) {
-    let (b1,b2) = team.return_player_at_middle();
+    let (b1, b2) = team.return_player_at_middle();
     ui.add(Label::new(
         RichText::new("\nBatters\n")
             .color(Color32::WHITE)
