@@ -1,4 +1,4 @@
-use crate::{app::*, team::*};
+use crate::{app::*, player::PlayerStrike, team::*};
 use eframe::egui::{self, Color32, Label, RichText, Ui, Vec2};
 #[derive(Clone, Copy)]
 pub enum BallEvent {
@@ -40,14 +40,12 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
         BallEvent::EventWaiting => {}
         BallEvent::EventDot => {
             println!("Dot");
-            match_team_roles(t1);
-            match_team_roles(t2);
+            t1.add_bat_ball_faced();
+            t2.add_bowler_ball_bowled();
         }
         BallEvent::EventRuns(ev) => match ev {
             RunsEvent::OneScored(_runs) => {
                 println!("One Run");
-                match_team_roles(t1);
-                match_team_roles(t2);
             }
             RunsEvent::TwoScored(_runs) => {
                 println!("Two Runs");
@@ -86,10 +84,10 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
 //Score Displays
 pub fn scores(ui: &mut Ui, scoreboard: &Scoreboard) {
     let t1 = &scoreboard.team_1;
-    let _t2 = &scoreboard.team_2;
+    let t2 = &scoreboard.team_2;
     team_scores(ui, t1);
     batter_scores(ui, t1);
-    //bowler_scores(ui, t2);
+    bowler_scores(ui, t2);
     extra_scores(ui, t1);
 }
 pub fn team_scores(ui: &mut Ui, team: &Team) {
@@ -128,6 +126,12 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
                     .monospace()
                     .size(12.0),
             ));
+            match b1.return_batter_strike_status() {
+                PlayerStrike::OnStrike => {
+                    ui.add(Label::new(RichText::new("*").monospace().color(Color32::WHITE)));
+                }
+                PlayerStrike::OffStrike => {}
+            }
             ui.end_row();
             ui.add(Label::new(
                 RichText::new(b2.return_player_name())
@@ -135,6 +139,12 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
                     .monospace()
                     .size(12.0),
             ));
+            match b2.return_batter_strike_status() {
+                PlayerStrike::OnStrike => {
+                    ui.add(Label::new(RichText::new("*").monospace().color(Color32::WHITE)));
+                }
+                PlayerStrike::OffStrike => {}
+            }
         });
         ui_2.horizontal_wrapped(|ui| {
             ui.add(Label::new(
@@ -153,9 +163,8 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
         });
     });
 }
-/*pub fn bowler_scores(ui: &mut Ui, team: &Team) {
-    let (b1, b2) = team.return_player_names();
-    let (b1_bowl, b2_bowl) = team.return_players_bowl_profile();
+pub fn bowler_scores(ui: &mut Ui, team: &Team) {
+    let bowler = team.return_player_bowling();
     ui.add(Label::new(
         RichText::new("\nBowlers\n")
             .color(Color32::WHITE)
@@ -166,36 +175,36 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
     ui.columns_const(|[ui_1, ui_2]| {
         ui_1.horizontal_wrapped(|ui| {
             ui.add(Label::new(
-                RichText::new(b1)
+                RichText::new(bowler.return_player_name())
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
             ));
             ui.end_row();
-            ui.add(Label::new(
+            /*ui.add(Label::new(
                 RichText::new(b2)
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
-            ));
+            ));*/
             ui_2.horizontal_wrapped(|ui| {
                 ui.add(Label::new(
-                    RichText::new(b1_bowl)
+                    RichText::new(bowler.return_player_bowl_profile())
                         .color(Color32::WHITE)
                         .monospace()
                         .size(12.0),
                 ));
                 ui.end_row();
-                ui.add(Label::new(
+                /*ui.add(Label::new(
                     RichText::new(b2_bowl)
                         .color(Color32::WHITE)
                         .monospace()
                         .size(12.0),
-                ));
+                ));*/
             });
         });
     });
-}*/
+}
 pub fn extra_scores(ui: &mut Ui, team: &Team) {
     let extras = team.return_extras();
     ui.horizontal(|ui| {
@@ -645,10 +654,10 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
 pub fn match_team_roles(team: &mut Team) {
     match team.return_team_role() {
         TeamRole::BattingTeam => {
-            println!("{} is batting", team.return_team_name());
+            
         }
         TeamRole::BowlingTeam => {
-            println!("{} is bowling", team.return_team_name());
+            
         }
     }
 }

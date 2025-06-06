@@ -26,6 +26,7 @@ pub struct Player {
     bat_profile: Bat,
     bowl_profile: Bowl,
     player_bat_status: PlayerBatStatus,
+    player_strike: PlayerStrike,
     player_bowl_status: PlayerBowlStatus,
 
 }
@@ -36,6 +37,7 @@ impl Player {
             bat_profile: Bat::new(),
             bowl_profile: Bowl::new(),
             player_bat_status: PlayerBatStatus::WaitingToBat,
+            player_strike: PlayerStrike::OffStrike,
             player_bowl_status: PlayerBowlStatus::WaitingToBowl,
         }
     }
@@ -44,6 +46,12 @@ impl Player {
     }
     pub fn set_player_bowl_status(&mut self, p_status: PlayerBowlStatus) {
         self.player_bowl_status = p_status;
+    }
+    pub fn set_player_batter_strike(&mut self, strike: PlayerStrike) {
+        self.player_strike = strike;
+    }
+    pub fn return_batter_strike_status(&self) -> PlayerStrike {
+        self.player_strike
     }
     pub fn return_player_bat_status(&self) -> PlayerBatStatus {
         self.player_bat_status

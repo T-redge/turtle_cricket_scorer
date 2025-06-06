@@ -36,6 +36,9 @@ impl Team {
             team_player: Box::new(player_list),
         }
     }
+    pub fn set_batter_strike(&mut self, player: usize, strike: PlayerStrike) {
+        self.team_player[player].set_player_batter_strike(strike);
+    }
     pub fn set_player_bat_status(&mut self, player: usize, p_status: PlayerBatStatus) {
         self.team_player[player].set_player_bat_status(p_status);
     }
@@ -48,6 +51,31 @@ impl Team {
     }
     pub fn add_team_wickets(&mut self) {
         self.team_wickets += 1;
+    }
+    pub fn add_bat_ball_faced(&mut self) {
+        self.team_balls += 1;
+        let (b1,b2) = self.return_player_at_middle_usize();
+        match self.team_player[b1].return_batter_strike_status() {
+            PlayerStrike::OnStrike => {
+                self.team_player[b1].add_ball_faced();
+            }
+            PlayerStrike::OffStrike => {
+                self.team_player[b2].add_ball_faced();
+            }
+        }
+    }
+    
+    pub fn add_bowler_ball_bowled(&mut self) {
+        
+        let mut bowler = 0;
+        loop {
+            match self.team_player[bowler].return_player_bowl_status() {
+                PlayerBowlStatus::IsBowling => {break;}
+                _ => {}
+            }
+            bowler += 1;
+        }
+        self.team_player[bowler].add_ball_bowled();
     }
     //Return functions
     pub fn return_player_bat_status(&self, player: usize) -> PlayerBatStatus {
@@ -80,6 +108,41 @@ impl Team {
         let b2 = self.team_player[b2_count].clone();
 
         (b1, b2)
+    }
+    pub fn return_player_at_middle_usize(&self) -> (usize, usize) {
+        let mut b1_count = 0;
+        let mut b2_count = 0;
+        'b1: loop {
+            match self.team_player[b1_count].return_player_bat_status() {
+                PlayerBatStatus::InTheMiddle => break 'b1,
+                _ => {}
+            }
+            b1_count += 1;
+        }
+        'b2: loop {
+            if b1_count == b2_count {
+                b2_count += 1;
+            }
+            match self.team_player[b1_count].return_player_bat_status() {
+                PlayerBatStatus::InTheMiddle => break 'b2,
+                _ => {}
+            }
+            b2_count += 1;
+        }
+
+        (b1_count, b2_count)
+    }
+    pub fn return_player_bowling(&self) -> Player {
+        let mut bowler_count = 0;
+        loop {
+            match self.team_player[bowler_count].return_player_bowl_status() {
+                PlayerBowlStatus::IsBowling => break,
+                _ => {}
+            }
+            bowler_count += 1;
+        }
+        let curr_bowler = self.team_player[bowler_count].clone();
+        curr_bowler
     }
     pub fn return_team_score(&self) -> (String, String) {
         let mut team_total = self.team_name.to_string();
@@ -117,6 +180,7 @@ impl Team {
         &self.team_name
     }
 }
+
 pub fn load_team_list(team_name: &str) -> (String, Vec<Player>) {
     let mut tmp = Vec::new();
     let mut file_path = String::from("teamlists/");
