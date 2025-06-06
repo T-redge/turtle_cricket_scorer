@@ -1,7 +1,4 @@
-use crate::{
-    extras::Extras,
-    player::*,
-};
+use crate::{extras::Extras, player::*};
 use std::{
     fs,
     io::{BufRead, BufReader},
@@ -54,7 +51,7 @@ impl Team {
     }
     pub fn add_bat_ball_faced(&mut self) {
         self.team_balls += 1;
-        let (b1,b2) = self.return_player_at_middle_usize();
+        let (b1, b2) = self.return_player_at_middle_usize();
         match self.team_player[b1].return_batter_strike_status() {
             PlayerStrike::OnStrike => {
                 self.team_player[b1].add_ball_faced();
@@ -64,13 +61,13 @@ impl Team {
             }
         }
     }
-    
     pub fn add_bowler_ball_bowled(&mut self) {
-        
         let mut bowler = 0;
         loop {
             match self.team_player[bowler].return_player_bowl_status() {
-                PlayerBowlStatus::IsBowling => {break;}
+                PlayerBowlStatus::IsBowling => {
+                    break;
+                }
                 _ => {}
             }
             bowler += 1;
@@ -98,7 +95,7 @@ impl Team {
             if b1_count == b2_count {
                 b2_count += 1;
             }
-            match self.team_player[b1_count].return_player_bat_status() {
+            match self.team_player[b2_count].return_player_bat_status() {
                 PlayerBatStatus::InTheMiddle => break 'b2,
                 _ => {}
             }
@@ -123,7 +120,7 @@ impl Team {
             if b1_count == b2_count {
                 b2_count += 1;
             }
-            match self.team_player[b1_count].return_player_bat_status() {
+            match self.team_player[b2_count].return_player_bat_status() {
                 PlayerBatStatus::InTheMiddle => break 'b2,
                 _ => {}
             }
@@ -186,7 +183,6 @@ pub fn load_team_list(team_name: &str) -> (String, Vec<Player>) {
     let mut file_path = String::from("teamlists/");
     file_path.push_str(&team_name.to_ascii_lowercase());
     file_path.push_str(".txt");
-    println!("{file_path}");
     let t_list = fs::File::open(file_path).unwrap();
     let buf_reader = BufReader::new(t_list);
     for line in buf_reader.lines() {
@@ -198,8 +194,5 @@ pub fn load_team_list(team_name: &str) -> (String, Vec<Player>) {
     for x in 1..=11 {
         tmp_plyr.push(Player::new(&tmp[x].to_owned()));
     }
-    println!("{}", team_name);
-    println!("{:#?}", tmp_plyr);
-
     (tm_name, tmp_plyr)
 }

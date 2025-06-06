@@ -28,7 +28,6 @@ pub struct Player {
     player_bat_status: PlayerBatStatus,
     player_strike: PlayerStrike,
     player_bowl_status: PlayerBowlStatus,
-
 }
 impl Player {
     pub fn new(player_name: &str) -> Self {

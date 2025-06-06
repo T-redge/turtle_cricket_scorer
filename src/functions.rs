@@ -128,7 +128,9 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
             ));
             match b1.return_batter_strike_status() {
                 PlayerStrike::OnStrike => {
-                    ui.add(Label::new(RichText::new("*").monospace().color(Color32::WHITE)));
+                    ui.add(Label::new(
+                        RichText::new("*").monospace().color(Color32::WHITE),
+                    ));
                 }
                 PlayerStrike::OffStrike => {}
             }
@@ -141,7 +143,9 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
             ));
             match b2.return_batter_strike_status() {
                 PlayerStrike::OnStrike => {
-                    ui.add(Label::new(RichText::new("*").monospace().color(Color32::WHITE)));
+                    ui.add(Label::new(
+                        RichText::new("*").monospace().color(Color32::WHITE),
+                    ));
                 }
                 PlayerStrike::OffStrike => {}
             }
@@ -653,11 +657,7 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
 
 pub fn match_team_roles(team: &mut Team) {
     match team.return_team_role() {
-        TeamRole::BattingTeam => {
-            
-        }
-        TeamRole::BowlingTeam => {
-            
-        }
+        TeamRole::BattingTeam => {}
+        TeamRole::BowlingTeam => {}
     }
 }
