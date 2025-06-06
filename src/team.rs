@@ -20,6 +20,7 @@ pub struct Team {
     team_player: Box<Vec<Player>>,
 }
 impl Team {
+    //Changing fields
     pub fn new(team_name: &str, team_role: TeamRole) -> Self {
         let (name, player_list) = load_team_list(team_name);
         Team {
@@ -42,7 +43,6 @@ impl Team {
     pub fn set_player_bowl_status(&mut self, player: usize, p_status: PlayerBowlStatus) {
         self.team_player[player].set_player_bowl_status(p_status);
     }
-    //Changing fields functions
     pub fn add_team_runs(&mut self, amt: u16) {
         self.team_runs += amt;
     }
@@ -74,7 +74,7 @@ impl Team {
         }
         self.team_player[bowler].add_ball_bowled();
     }
-    //Return functions
+    //Return fields
     pub fn return_player_bat_status(&self, player: usize) -> PlayerBatStatus {
         self.team_player[player].return_player_bat_status()
     }

@@ -1,10 +1,5 @@
 use crate::{functions::*, player::*, team::*};
 use eframe::egui::{self, Align2, Button, Checkbox, Ui, Vec2};
-#[derive(Debug, PartialEq)]
-pub enum Field {
-    One,
-    Two,
-}
 pub struct Scoreboard {
     hide_extra_button: bool,
     ball_event: BallEvent,
