@@ -654,6 +654,12 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         },
     );
 }
+pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
+    if ui.add_sized(Vec2{x: 625.0,y: 50.0}, egui::Button::new("New Over")).clicked() {
+        scoreboard.set_bowler_picked();
+        scoreboard.set_over_button_bool();
+    }
+}
 
 pub fn match_team_roles(team: &mut Team) {
     match team.return_team_role() {

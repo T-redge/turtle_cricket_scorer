@@ -74,6 +74,9 @@ impl Team {
         self.team_player[bowler].add_ball_bowled();
         self.team_balls += 1;
     }
+    pub fn reset_team_balls_bowled(&mut self) {
+        self.team_balls = 0;
+    }
     //Return fields
     pub fn return_team_balls_bowled(&self) -> u8 {
         self.team_balls
