@@ -179,7 +179,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
     ui.columns_const(|[ui_1, ui_2]| {
         ui_1.horizontal_wrapped(|ui| {
             ui.add(Label::new(
-                RichText::new(bowler.return_player_name())
+                RichText::new(team.return_player_names(bowler))
                     .color(Color32::WHITE)
                     .monospace()
                     .size(12.0),
@@ -193,7 +193,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
             ));*/
             ui_2.horizontal_wrapped(|ui| {
                 ui.add(Label::new(
-                    RichText::new(bowler.return_player_bowl_profile())
+                    RichText::new(team.return_players_bowl_profile(bowler))
                         .color(Color32::WHITE)
                         .monospace()
                         .size(12.0),

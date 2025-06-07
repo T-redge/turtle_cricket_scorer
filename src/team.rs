@@ -50,7 +50,6 @@ impl Team {
         self.team_wickets += 1;
     }
     pub fn add_bat_ball_faced(&mut self) {
-        self.team_balls += 1;
         let (b1, b2) = self.return_player_at_middle_usize();
         match self.team_player[b1].return_batter_strike_status() {
             PlayerStrike::OnStrike => {
@@ -73,8 +72,12 @@ impl Team {
             bowler += 1;
         }
         self.team_player[bowler].add_ball_bowled();
+        self.team_balls += 1;
     }
     //Return fields
+    pub fn return_team_balls_bowled(&self) -> u8 {
+        self.team_balls
+    }
     pub fn return_player_bat_status(&self, player: usize) -> PlayerBatStatus {
         self.team_player[player].return_player_bat_status()
     }
@@ -129,7 +132,7 @@ impl Team {
 
         (b1_count, b2_count)
     }
-    pub fn return_player_bowling(&self) -> Player {
+    pub fn return_player_bowling(&self) -> usize {
         let mut bowler_count = 0;
         loop {
             match self.team_player[bowler_count].return_player_bowl_status() {
@@ -138,8 +141,7 @@ impl Team {
             }
             bowler_count += 1;
         }
-        let curr_bowler = self.team_player[bowler_count].clone();
-        curr_bowler
+        bowler_count
     }
     pub fn return_team_score(&self) -> (String, String) {
         let mut team_total = self.team_name.to_string();
@@ -161,10 +163,9 @@ impl Team {
         let p2_bat = self.team_player[0].return_player_bat_profile();
         (p1_bat, p2_bat)
     }
-    pub fn return_players_bowl_profile(&self) -> (String, String) {
-        let p1_bowl = self.team_player[0].return_player_bowl_profile();
-        let p2_bowl = self.team_player[0].return_player_bowl_profile();
-        (p1_bowl, p2_bowl)
+    pub fn return_players_bowl_profile(&self, player_num: usize) -> String {
+        let p1_bowl = self.team_player[player_num].return_player_bowl_profile();
+        p1_bowl
     }
     pub fn return_extras(&self) -> String {
         let extras = self.team_extras.return_extras();
