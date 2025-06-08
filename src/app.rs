@@ -61,6 +61,7 @@ impl Scoreboard {
     pub fn check_over_bowled(&mut self) {
         if self.team_2.return_team_balls_bowled() == 6 {
             self.set_over_button_bool();
+           
         }
     }
     pub fn return_hide_extra_button(&self) -> bool {
@@ -147,6 +148,10 @@ pub fn get_openers(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     }
 }
 pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
+    if scoreboard.team_2.return_over_number() > 1 {
+        let last_bowler = scoreboard.team_2.return_player_bowling();
+        scoreboard.team_2.set_player_bowl_status(last_bowler, PlayerBowlStatus::BowledLastOver);
+    }
     for x in &scoreboard.player_number {
         ui.radio_value(
             &mut scoreboard.selected_bowler,

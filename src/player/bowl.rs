@@ -20,6 +20,12 @@ impl Bowl {
     pub fn add_ball_bowled(&mut self) {
         self.player_balls += 1;
     }
+    pub fn add_over_bowled(&mut self) {
+        self.player_overs += 1;
+    }
+    pub fn reset_balls_bowled(&mut self) {
+        self.player_balls = 0;
+    }
     //Return Functions
     pub fn return_bowling_figures(&self) -> String {
         let mut bowl_figure = self.player_overs.to_string();

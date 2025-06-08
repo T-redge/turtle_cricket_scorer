@@ -60,6 +60,9 @@ impl Team {
             }
         }
     }
+    pub fn add_over_bowled(&mut self) {
+        self.team_overs += 1;
+    }
     pub fn add_bowler_ball_bowled(&mut self) {
         let mut bowler = 0;
         loop {
@@ -75,9 +78,14 @@ impl Team {
         self.team_balls += 1;
     }
     pub fn reset_team_balls_bowled(&mut self) {
+        let bowler = self.return_player_bowling();
         self.team_balls = 0;
+        self.team_player[bowler].player_bowled_over();
     }
     //Return fields
+    pub fn return_over_number(&self) -> u8 {
+        self.team_overs
+    }
     pub fn return_team_balls_bowled(&self) -> u8 {
         self.team_balls
     }
@@ -146,17 +154,32 @@ impl Team {
         }
         bowler_count
     }
-    pub fn return_team_score(&self) -> (String, String) {
+    pub fn return_player_bowled_last_over(&self) -> usize {
+        let mut bowler_count = 0;
+        loop {
+            match self.team_player[bowler_count].return_player_bowl_status() {
+                PlayerBowlStatus::BowledLastOver => break,
+                _ => {}
+            }
+            bowler_count += 1;
+        }
+        bowler_count
+    }
+    pub fn return_team_score(&self) -> String {
         let mut team_total = self.team_name.to_string();
         team_total.push_str("\t");
         team_total.push_str(&self.team_runs.to_string());
         team_total.push_str("/");
         team_total.push_str(&self.team_wickets.to_string());
-        let mut over_total = String::from("Over:\t");
-        over_total.push_str(&self.team_overs.to_string());
-        over_total.push_str(".");
-        over_total.push_str(&self.team_balls.to_string());
-        (team_total, over_total)
+        
+        team_total
+    }
+    pub fn return_over_total(&self) -> String {
+        let mut over = String::from("Overs:\t");
+        over.push_str(&self.team_overs.to_string());
+        over.push_str(".");
+        over.push_str(&self.team_balls.to_string());
+        over
     }
     pub fn return_player_names(&self, player: usize) -> &str {
         self.team_player[player].return_player_name()

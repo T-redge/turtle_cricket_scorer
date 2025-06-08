@@ -76,4 +76,8 @@ impl Player {
     pub fn return_player_bowl_profile(&self) -> String {
         self.bowl_profile.return_bowling_figures()
     }
+    pub fn player_bowled_over(&mut self) {
+        self.bowl_profile.add_over_bowled();
+        self.bowl_profile.reset_balls_bowled();
+    }
 }

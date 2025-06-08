@@ -1,4 +1,4 @@
-use crate::{app::*, player::PlayerStrike, team::*};
+use crate::{app::*, player::*, team::*};
 use eframe::egui::{self, Color32, Label, RichText, Ui, Vec2};
 #[derive(Clone, Copy)]
 pub enum BallEvent {
@@ -85,13 +85,14 @@ pub fn match_ball_event(scoreboard: &mut Scoreboard) {
 pub fn scores(ui: &mut Ui, scoreboard: &Scoreboard) {
     let t1 = &scoreboard.team_1;
     let t2 = &scoreboard.team_2;
-    team_scores(ui, t1);
+    team_scores(ui, &scoreboard);
     batter_scores(ui, t1);
     bowler_scores(ui, t2);
     extra_scores(ui, t1);
 }
-pub fn team_scores(ui: &mut Ui, team: &Team) {
-    let (tm_nm, overs) = team.return_team_score();
+pub fn team_scores(ui: &mut Ui, scoreboard: &Scoreboard) {
+    let tm_nm = scoreboard.team_1.return_team_score();
+    let overs = scoreboard.team_2.return_over_total();
     ui.horizontal(|ui| {
         ui.columns_const(|[ui_1, ui_2]| {
             ui_1.add(Label::new(
@@ -185,12 +186,16 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
                     .size(12.0),
             ));
             ui.end_row();
-            /*ui.add(Label::new(
-                RichText::new(b2)
-                    .color(Color32::WHITE)
-                    .monospace()
-                    .size(12.0),
-            ));*/
+            if team.return_over_number() > 1 {
+                let bowler_two = team.return_player_bowled_last_over();
+                
+                ui.add(Label::new(
+                    RichText::new(team.return_player_names(bowler_two))
+                        .color(Color32::WHITE)
+                        .monospace()
+                        .size(12.0),
+                ));
+            }
             ui_2.horizontal_wrapped(|ui| {
                 ui.add(Label::new(
                     RichText::new(team.return_players_bowl_profile(bowler))
@@ -199,12 +204,17 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
                         .size(12.0),
                 ));
                 ui.end_row();
-                /*ui.add(Label::new(
-                    RichText::new(b2_bowl)
-                        .color(Color32::WHITE)
-                        .monospace()
-                        .size(12.0),
-                ));*/
+                if team.return_over_number() > 1 {
+                    let bowler_two = team.return_player_bowled_last_over();
+                
+                    ui.add(Label::new(
+                        RichText::new(team.return_players_bowl_profile(bowler_two))
+                            .color(Color32::WHITE)
+                            .monospace()
+                            .size(12.0),
+                        ));
+                }
+            
             });
         });
     });
@@ -658,6 +668,8 @@ pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     if ui.add_sized(Vec2{x: 625.0,y: 50.0}, egui::Button::new("New Over")).clicked() {
         scoreboard.set_bowler_picked();
         scoreboard.set_over_button_bool();
+        scoreboard.team_2.reset_team_balls_bowled();
+        scoreboard.team_2.add_over_bowled();
     }
 }
 
