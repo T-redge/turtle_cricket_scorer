@@ -1,5 +1,5 @@
 use crate::{functions::*, player::*, team::*};
-use eframe::{egui::{self, Align2, Button, Checkbox, Ui, Vec2}};
+use eframe::egui::{self, Align2, Button, Checkbox, Label, Ui, Vec2};
 pub struct Scoreboard {
     hide_extra_button: bool,
     hide_over_button: bool,
@@ -73,6 +73,7 @@ impl Scoreboard {
 }
 impl eframe::App for Scoreboard {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        debug_window(self, ctx);
         if self.ball_bowled {
             match_ball_event(self);
             self.check_over_bowled();
@@ -148,10 +149,10 @@ pub fn get_openers(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     }
 }
 pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
-    if scoreboard.team_2.return_over_number() > 1 {
+    /*if scoreboard.team_2.return_over_number() > 1 {
         let last_bowler = scoreboard.team_2.return_player_bowling();
         scoreboard.team_2.set_player_bowl_status(last_bowler, PlayerBowlStatus::BowledLastOver);
-    }
+    }*/
     for x in &scoreboard.player_number {
         ui.radio_value(
             &mut scoreboard.selected_bowler,
@@ -162,6 +163,10 @@ pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         .add_sized(Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Bowler"))
         .clicked()
     {
+        if scoreboard.team_2.return_team_balls_bowled() == 6 {
+            let bowler = scoreboard.team_2.return_player_bowling();
+            scoreboard.team_2.set_player_bowl_status(bowler, PlayerBowlStatus::BowledLastOver);
+        }
         for x in &scoreboard.player_number{
             if scoreboard.selected_bowler == scoreboard.team_2.return_player_names(scoreboard.player_number[*x]) {
                 scoreboard.team_2.set_player_bowl_status(*x, PlayerBowlStatus::IsBowling);
@@ -202,4 +207,15 @@ pub fn choose_batter_strike(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                 .show(ctx, |ui| {
                     set_batter_strike(ui, scoreboard);
                 });
+}
+pub fn debug_window(scoreboard: &Scoreboard, ctx: &egui::Context) {
+    egui::Window::new("Debug").show(ctx, |ui| {
+        let bat_p = scoreboard.batters_picked.to_string();
+        let bowl_p = scoreboard.bowler_picked.to_string();
+
+
+
+        ui.add(Label::new(bat_p));
+        ui.add(Label::new(bowl_p));
+    });
 }
