@@ -87,7 +87,7 @@ pub fn scores(ui: &mut Ui, scoreboard: &Scoreboard) {
     let t2 = &scoreboard.team_2;
     team_scores(ui, &scoreboard);
     batter_scores(ui, t1);
-    bowler_scores(ui, t2);
+    bowler_scores(ui, t2, scoreboard);
     extra_scores(ui, t1);
 }
 pub fn team_scores(ui: &mut Ui, scoreboard: &Scoreboard) {
@@ -168,7 +168,7 @@ pub fn batter_scores(ui: &mut Ui, team: &Team) {
         });
     });
 }
-pub fn bowler_scores(ui: &mut Ui, team: &Team) {
+pub fn bowler_scores(ui: &mut Ui, team: &Team, scoreboard: &Scoreboard) {
     let bowler = team.return_player_bowling();
     ui.add(Label::new(
         RichText::new("\nBowlers\n")
@@ -186,7 +186,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
                     .size(12.0),
             ));
             ui.end_row();
-            if team.return_over_number() > 1 {
+            if scoreboard.return_opening_bowler_bool() {
                 let bowler_two = team.return_player_bowled_last_over();
                 
                 ui.add(Label::new(
@@ -204,7 +204,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
                         .size(12.0),
                 ));
                 ui.end_row();
-                if team.return_over_number() > 1 {
+                if scoreboard.return_opening_bowler_bool() {
                     let bowler_two = team.return_player_bowled_last_over();
                 
                     ui.add(Label::new(
@@ -212,7 +212,7 @@ pub fn bowler_scores(ui: &mut Ui, team: &Team) {
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
-                        ));
+                    ));
                 }
             
             });
@@ -670,6 +670,12 @@ pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         scoreboard.set_over_button_bool();
         scoreboard.team_2.reset_team_balls_bowled();
         scoreboard.team_2.add_over_bowled();
+        let bowler = scoreboard.team_2.return_player_bowling();
+        if bowler == 11 {
+            scoreboard.set_bowler_picked();
+        }
+        scoreboard.team_2.set_player_bowl_status(bowler, PlayerBowlStatus::BowledLastOver);
+        scoreboard.open_bowler_picked = true;
     }
 }
 

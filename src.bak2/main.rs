@@ -1,8 +1,12 @@
 use eframe::egui::{Vec2, ViewportBuilder};
-mod buttons;
-mod scoreboard;
-use crate::scoreboard::*;
-
+pub mod app;
+pub mod extras;
+pub mod functions;
+pub mod innings;
+pub mod over;
+pub mod player;
+pub mod team;
+use app::*;
 fn main() {
     let native_options = eframe::NativeOptions {
         viewport: ViewportBuilder {
@@ -11,12 +15,10 @@ fn main() {
         },
         ..Default::default()
     };
-    let home_team = "Edgewater";
-    let away_team = "Kingsway";
     eframe::run_native(
         "Scorer",
         native_options,
-        Box::new(|cc| Ok(Box::new(Scoreboard::new(cc, home_team, away_team)))),
+        Box::new(|cc| Ok(Box::new(Scoreboard::new(cc)))),
     )
     .unwrap();
 }

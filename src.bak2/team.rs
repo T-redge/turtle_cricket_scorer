@@ -151,6 +151,9 @@ impl Team {
                 _ => {}
             }
             bowler_count += 1;
+            if bowler_count == 11 {
+                return bowler_count;
+            }
         }
         bowler_count
     }
@@ -162,6 +165,9 @@ impl Team {
                 _ => {}
             }
             bowler_count += 1;
+            if bowler_count == 11 {
+                bowler_count = 0;
+            }
         }
         bowler_count
     }

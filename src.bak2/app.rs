@@ -9,6 +9,7 @@ pub struct Scoreboard {
     pub team_2: Team,
     player_strike: bool,
     batters_picked: bool,
+    pub open_bowler_picked: bool,
     bowler_picked: bool,
     selected_bat: Vec<bool>,
     selected_bowler: String,
@@ -25,6 +26,7 @@ impl Scoreboard {
             team_2: Team::new("Kingsway", TeamRole::BowlingTeam),
             player_strike: false,
             batters_picked: false,
+            open_bowler_picked: false,
             bowler_picked: false,
             selected_bat: vec![false; 12],
             selected_bowler: String::new(),
@@ -69,6 +71,9 @@ impl Scoreboard {
     }
     pub fn return_ball_event(&self) -> BallEvent {
         self.ball_event
+    }
+    pub fn return_opening_bowler_bool(&self) -> bool {
+        self.open_bowler_picked
     }
 }
 impl eframe::App for Scoreboard {
@@ -149,10 +154,6 @@ pub fn get_openers(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     }
 }
 pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
-    /*if scoreboard.team_2.return_over_number() > 1 {
-        let last_bowler = scoreboard.team_2.return_player_bowling();
-        scoreboard.team_2.set_player_bowl_status(last_bowler, PlayerBowlStatus::BowledLastOver);
-    }*/
     for x in &scoreboard.player_number {
         ui.radio_value(
             &mut scoreboard.selected_bowler,
@@ -162,11 +163,7 @@ pub fn get_bowler(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     if ui
         .add_sized(Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Bowler"))
         .clicked()
-    {
-        if scoreboard.team_2.return_team_balls_bowled() == 6 {
-            let bowler = scoreboard.team_2.return_player_bowling();
-            scoreboard.team_2.set_player_bowl_status(bowler, PlayerBowlStatus::BowledLastOver);
-        }
+    { 
         for x in &scoreboard.player_number{
             if scoreboard.selected_bowler == scoreboard.team_2.return_player_names(scoreboard.player_number[*x]) {
                 scoreboard.team_2.set_player_bowl_status(*x, PlayerBowlStatus::IsBowling);
@@ -213,9 +210,30 @@ pub fn debug_window(scoreboard: &Scoreboard, ctx: &egui::Context) {
         let bat_p = scoreboard.batters_picked.to_string();
         let bowl_p = scoreboard.bowler_picked.to_string();
 
-
+        let bowl_status1 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(0)));
+        let bowl_status2 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(1)));
+        let bowl_status3 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(2)));
+        let bowl_status4 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(3)));
+        let bowl_status5 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(4)));
+        let bowl_status6 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(5)));
+        let bowl_status7 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(6)));
+        let bowl_status8 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(7)));
+        let bowl_status9 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(8)));
+        let bowl_status10 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(9)));
+        let bowl_status11 = egui::RichText::new(format!("{:?}",scoreboard.team_2.return_player_bowl_status(10)));
 
         ui.add(Label::new(bat_p));
         ui.add(Label::new(bowl_p));
+        ui.add(Label::new(bowl_status1));
+        ui.add(Label::new(bowl_status2));
+        ui.add(Label::new(bowl_status3));
+        ui.add(Label::new(bowl_status4));
+        ui.add(Label::new(bowl_status5));
+        ui.add(Label::new(bowl_status6));
+        ui.add(Label::new(bowl_status7));
+        ui.add(Label::new(bowl_status8));
+        ui.add(Label::new(bowl_status9));
+        ui.add(Label::new(bowl_status10));
+        ui.add(Label::new(bowl_status11));
     });
 }
