@@ -1,11 +1,13 @@
-use crate::scoreboard::*;
+use crate::{scoreboard::*};
 use eframe::egui::{self, RichText, Ui, Vec2};
 
-pub fn dot_ball_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
+pub fn dot_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     if ui
         .add_sized(Vec2 { x: 100.0, y: 50.0 }, egui::Button::new("Dot"))
         .clicked()
-    {}
+    {
+        scoreboard.innings.ball_bowled();
+    }
 }
 pub fn runs_ball_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
     let run_button = ui.add_sized(Vec2 { x: 100.0, y: 50.0 }, egui::Button::new("Runs"));
@@ -326,9 +328,11 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         },
     );
 }
-pub fn _new_over_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
+pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     if ui
         .add_sized(Vec2 { x: 625.0, y: 50.0 }, egui::Button::new("New Over"))
         .clicked()
-    {}
+    {
+        scoreboard.innings.over_bowled();
+    }
 }

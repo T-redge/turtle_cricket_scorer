@@ -2,6 +2,7 @@ use eframe::egui::{Vec2, ViewportBuilder};
 mod buttons;
 mod innings;
 mod scoreboard;
+mod team;
 use crate::scoreboard::*;
 
 fn main() {
