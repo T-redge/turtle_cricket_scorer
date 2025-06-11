@@ -154,7 +154,9 @@ pub fn wide_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
             ui.centered_and_justified(|ui| {
@@ -168,7 +170,9 @@ pub fn wide_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("5"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
         },
@@ -194,15 +198,21 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
             ui.centered_and_justified(|ui| {
@@ -210,11 +220,15 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("6"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
         },
@@ -240,19 +254,27 @@ pub fn bye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
         },
@@ -278,19 +300,27 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
-                    {scoreboard.set_hide_button_bool(false);}
+                    {
+                        scoreboard.set_hide_button_bool(false);
+                    }
                 });
             });
         },

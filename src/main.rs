@@ -1,5 +1,6 @@
 use eframe::egui::{Vec2, ViewportBuilder};
 mod buttons;
+mod innings;
 mod scoreboard;
 use crate::scoreboard::*;
 

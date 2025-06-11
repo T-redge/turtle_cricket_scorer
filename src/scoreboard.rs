@@ -1,19 +1,26 @@
-use crate::buttons::*;
+use crate::{buttons::*, innings::*};
 use eframe::egui::{self, Color32, Label, RichText};
 pub struct Scoreboard<'a> {
     home_team: &'a str,
     away_team: &'a str,
+
+    innings: Innings,
+    innings_complete: bool,
 
     extra_button_hidden: bool,
 }
 
 impl eframe::App for Scoreboard<'_> {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        team_scores(ctx, self);
-        batter_scores(ctx, self);
-        bowler_scores(ctx, self);
-        extra_scores(ctx, self);
-        button_bar(ctx, self);
+        if !self.innings_complete {
+            team_scores(ctx, self);
+            batter_scores(ctx, self);
+            bowler_scores(ctx, self);
+            extra_scores(ctx, self);
+            button_bar(ctx, self);
+        } else {
+            innings_scores(ctx, self);
+        }
     }
 }
 
@@ -26,6 +33,9 @@ impl Scoreboard<'_> {
         Self {
             home_team,
             away_team,
+
+            innings: Innings::new(),
+            innings_complete: false,
 
             extra_button_hidden: false,
         }
@@ -69,16 +79,16 @@ fn team_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                             .size(20.0),
                     ));
                     overs.add(Label::new(
-                        RichText::new(String::from("Overs:\t0.0"))
+                        RichText::new(scoreboard.innings.return_overs_label())
                             .monospace()
                             .color(Color32::WHITE)
-                            .size(20.0),
+                            .size(19.0),
                     ));
                     overs.add(Label::new(
-                        RichText::new(String::from("Overs:\t0.0"))
+                        RichText::new(scoreboard.innings.return_overs_label())
                             .monospace()
                             .color(Color32::WHITE)
-                            .size(20.0),
+                            .size(19.0),
                     ));
                 });
             });
@@ -192,13 +202,13 @@ fn button_bar(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
     egui::TopBottomPanel::top("id_Button_bar")
         .exact_height(100.0)
         .show(ctx, |ui| {
-            ui.columns_const(|[dot,run,extra,wicket]| {
+            ui.columns_const(|[dot, run, extra, wicket]| {
                 dot_ball_button(dot, scoreboard);
                 runs_ball_button(run, scoreboard);
                 if !scoreboard.return_hide_button_bool() {
                     extra_ball_button(extra, scoreboard);
                 } else {
-                    extra.columns_const(|[col_1,col_2]| {
+                    extra.columns_const(|[col_1, col_2]| {
                         wide_ball_button(col_1, scoreboard);
                         noball_ball_button(col_2, scoreboard);
                         bye_ball_button(col_1, scoreboard);
@@ -208,4 +218,9 @@ fn button_bar(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                 wicket_ball_button(wicket, scoreboard);
             });
         });
+}
+fn innings_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
+    egui::CentralPanel::default().show(ctx, |ui| {
+        ui.label("End of Innings!");
+    });
 }
