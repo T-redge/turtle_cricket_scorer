@@ -20,22 +20,7 @@ impl Innings {
             balls_bowled: 0,
         }
     }
-    pub fn return_team_names(&self) -> (String,String) {
-        (
-            self.batting_team.return_team_name(),
-            self.bowling_team.return_team_name()
-        )
-    }
-    pub fn return_overs_label(&self) -> String {
-        let mut over_label = "Overs:\t".to_string();
-        over_label.push_str(&self.return_overs_bowled().to_string());
-        over_label.push_str(".");
-        over_label.push_str(&self.return_balls_bowled().to_string());
-        over_label.push_str("(");
-        over_label.push_str(&self.return_inning_length().to_string());
-        over_label.push_str(")");
-        over_label
-    }
+        
     pub fn ball_bowled(&mut self) {
         self.balls_bowled += 1;
     }
@@ -43,6 +28,7 @@ impl Innings {
         self.overs_bowled += 1;
         self.balls_bowled = 0;
     }
+    
     pub fn check_innings_finished(&self) -> bool {
         if self.overs_bowled == self.inning_length {
             return true;
@@ -57,6 +43,29 @@ impl Innings {
             return false;
         }
 
+    }
+    
+    pub fn return_team_names(&self) -> (String,String) {
+        (
+            self.batting_team.return_team_name(),
+            self.bowling_team.return_team_name()
+        )
+    }
+    pub fn return_team_lists(&self) -> (String,String) {
+        let batting_team = self.batting_team.return_team_players();
+        let bowling_team = self.bowling_team.return_team_players();
+
+        (batting_team,bowling_team)
+    }
+    pub fn return_overs_label(&self) -> String {
+        let mut over_label = "Overs:\t".to_string();
+        over_label.push_str(&self.return_overs_bowled().to_string());
+        over_label.push_str(".");
+        over_label.push_str(&self.return_balls_bowled().to_string());
+        over_label.push_str("(");
+        over_label.push_str(&self.return_inning_length().to_string());
+        over_label.push_str(")");
+        over_label
     }
     fn return_inning_length(&self) -> u8 {
         self.inning_length

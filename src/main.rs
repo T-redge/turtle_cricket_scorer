@@ -3,6 +3,7 @@ mod buttons;
 mod innings;
 mod scoreboard;
 mod team;
+mod players;
 use crate::scoreboard::*;
 
 fn main() {
