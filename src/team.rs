@@ -34,13 +34,19 @@ impl Team {
             .to_string();
         (bowler_name, bowler_scores)
     }
-    pub fn player_scored_runs(&mut self, player: usize, runs: u16) {
-        self.players[player].player_scored_runs(runs);
+    pub fn batter_scored_runs(&mut self, player: usize, runs: u16) {
+        self.players[player].batter_scored_runs(runs);
     }
-    pub fn player_conceded_runs(&mut self, player: usize, runs: u16) {
+    pub fn batter_ball_faced(&mut self, player: usize) {
+        self.players[player].batter_ball_faced();
+    }
+    pub fn bowler_ball_completed(&mut self, player: usize) {
+        self.players[player].bowler_ball_completed();
+    } 
+    pub fn bowler_conceded_runs(&mut self, player: usize, runs: u16) {
         self.players[player].bowler_conceded_runs(runs);
     }
-    pub fn player_over_completed(&mut self, player: usize) {
+    pub fn bowler_over_completed(&mut self, player: usize) {
         self.players[player].bowler_over_completed();
     }
 }

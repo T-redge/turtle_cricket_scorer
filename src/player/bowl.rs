@@ -30,8 +30,10 @@ impl Bowler {
     pub fn wickets_bowled(&self) -> u8 {
         self.wickets
     }
-    pub fn runs_conceded(&mut self, runs: u8) {
+    pub fn ball_completed(&mut self) {
         self.balls += 1;
+    }
+    pub fn runs_conceded(&mut self, runs: u8) {
         self.runs += runs;
     }
     pub fn over_completed(&mut self) {

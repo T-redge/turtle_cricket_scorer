@@ -12,8 +12,10 @@ impl Batter {
     pub fn return_runs_scored(&self) -> u16 {
         self.runs
     }
-    pub fn runs_scored(&mut self, runs: u16) {
+    pub fn ball_faced(&mut self) {
         self.balls += 1;
+    }
+    pub fn runs_scored(&mut self, runs: u16) {
         self.runs += runs;
     }
 }

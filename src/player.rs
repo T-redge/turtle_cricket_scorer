@@ -38,8 +38,14 @@ impl Player {
         bl_s.push_str(&self.bowler.wickets_bowled().to_string());
         bl_s
     }
-    pub fn player_scored_runs(&mut self, runs: u16) {
+    pub fn batter_scored_runs(&mut self, runs: u16) {
         self.batter.runs_scored(runs);
+    }
+    pub fn batter_ball_faced(&mut self) {
+        self.batter.ball_faced();
+    }
+    pub fn bowler_ball_completed(&mut self) {
+        self.bowler.ball_completed();
     }
     pub fn bowler_conceded_runs(&mut self, runs: u16) {
         self.bowler.runs_conceded(runs as u8);

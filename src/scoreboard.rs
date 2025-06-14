@@ -8,6 +8,7 @@ pub struct Scoreboard {
 
 impl eframe::App for Scoreboard {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        self.innings.match_ball_event();
         if !self.innings_started {
             team_lists(ctx, self);
         } else if !self.innings.check_innings_finished() {
@@ -104,7 +105,7 @@ fn team_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                             .size(20.0),
                     ));
                     scores.add(Label::new(
-                        RichText::new(String::from("0/0"))
+                        RichText::new(String::from(scoreboard.innings.return_team_score()))
                             .monospace()
                             .color(Color32::WHITE)
                             .size(20.0),

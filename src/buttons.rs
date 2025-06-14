@@ -1,4 +1,4 @@
-use crate::scoreboard::*;
+use crate::{innings::BallEvent, scoreboard::{self, *}};
 use eframe::egui::{self, RichText, Ui, Vec2};
 
 pub fn dot_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
@@ -6,9 +6,7 @@ pub fn dot_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         .add_sized(Vec2 { x: 100.0, y: 50.0 }, egui::Button::new("Dot"))
         .clicked()
     {
-        scoreboard.innings.ball_bowled();
-        scoreboard.innings.batting_team.player_scored_runs(0, 0);
-        scoreboard.innings.bowling_team.player_conceded_runs(0, 0);
+        scoreboard.innings.set_ball_event(BallEvent::DotBall);
     }
 }
 pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
@@ -32,22 +30,21 @@ pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
-                        scoreboard.innings.batting_team.player_scored_runs(0, 1);
-                        scoreboard.innings.bowling_team.player_conceded_runs(0, 1);
+                        scoreboard.innings.set_ball_event(BallEvent::RunScored(1));
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
-                        scoreboard.innings.batting_team.player_scored_runs(0, 2);
-                        scoreboard.innings.bowling_team.player_conceded_runs(0, 2);
+                        scoreboard.innings.set_ball_event(BallEvent::RunScored(2));
+                       
                     }
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
-                        scoreboard.innings.batting_team.player_scored_runs(0, 3);
-                        scoreboard.innings.bowling_team.player_conceded_runs(0, 3);
+                        scoreboard.innings.set_ball_event(BallEvent::RunScored(3));
+                       
                     }
                 });
                 ui.centered_and_justified(|ui| {
@@ -56,15 +53,15 @@ pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                             .clicked()
                         {
-                            scoreboard.innings.batting_team.player_scored_runs(0, 4);
-                        scoreboard.innings.bowling_team.player_conceded_runs(0, 4);
+                        scoreboard.innings.set_ball_event(BallEvent::RunScored(4));
+                            
                         }
                         if ui_2
                             .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("6"))
                             .clicked()
                         {
-                            scoreboard.innings.batting_team.player_scored_runs(0, 6);
-                            scoreboard.innings.bowling_team.player_conceded_runs(0, 6);
+                        scoreboard.innings.set_ball_event(BallEvent::RunScored(6));
+                           
                         }
                     });
                 });

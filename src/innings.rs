@@ -1,5 +1,11 @@
 use crate::team::Team;
 
+pub enum BallEvent {
+    Waiting,
+    DotBall,
+    RunScored(u16),
+}
+
 pub struct Innings {
     pub batting_team: Team,
     pub bowling_team: Team,
@@ -7,6 +13,10 @@ pub struct Innings {
     inning_length: u8,
     overs_bowled: u8,
     balls_bowled: u8,
+
+    runs_total: u16,
+
+    ball_event: BallEvent
 }
 
 impl Innings {
@@ -18,16 +28,44 @@ impl Innings {
             inning_length: 5,
             overs_bowled: 0,
             balls_bowled: 0,
+
+            runs_total: 0,
+
+            ball_event: BallEvent::Waiting,
         }
     }
-
+    pub fn set_ball_event(&mut self, event: BallEvent) {
+        self.ball_event = event;
+    }
+    pub fn match_ball_event(&mut self) {
+        match self.ball_event {
+            BallEvent::Waiting => {}
+            BallEvent::DotBall => {
+                self.ball_bowled();
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::RunScored(runs) => {
+                self.ball_bowled();
+                self.runs_scored(runs);
+                self.set_ball_event(BallEvent::Waiting);
+            }
+        }
+    }
+    pub fn runs_scored(&mut self, runs: u16) {
+        self.runs_total += runs;
+        self.batting_team.batter_scored_runs(0, runs);
+        self.bowling_team.bowler_conceded_runs(0, runs);
+    }
     pub fn ball_bowled(&mut self) {
         self.balls_bowled += 1;
+        self.bowling_team.bowler_ball_completed(0);
+        self.batting_team.batter_ball_faced(0);
+        
     }
     pub fn over_bowled(&mut self) {
         self.overs_bowled += 1;
         self.balls_bowled = 0;
-        self.bowling_team.player_over_completed(0);
+        self.bowling_team.bowler_over_completed(0);
     }
 
     pub fn check_innings_finished(&self) -> bool {
@@ -44,7 +82,6 @@ impl Innings {
             return false;
         }
     }
-
     pub fn return_team_names(&self) -> (String, String) {
         (
             self.batting_team.return_team_name(),
@@ -67,6 +104,12 @@ impl Innings {
         over_label.push_str(")");
         over_label
     }
+    pub fn return_team_score(&self) -> String {
+        let mut team_score = self.return_team_total().to_string();
+        team_score.push_str("/");
+        team_score.push_str("0");
+        team_score
+    }
     fn return_inning_length(&self) -> u8 {
         self.inning_length
     }
@@ -75,5 +118,8 @@ impl Innings {
     }
     fn return_balls_bowled(&self) -> u8 {
         self.balls_bowled
+    }
+    fn return_team_total(&self) -> u16 {
+        self.runs_total
     }
 }
