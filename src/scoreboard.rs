@@ -1,7 +1,6 @@
 use crate::{buttons::*, innings::*};
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
-
     pub innings: Innings,
     innings_started: bool,
     extra_button_hidden: bool,
@@ -23,7 +22,7 @@ impl eframe::App for Scoreboard {
         } else {
             innings_recap(ctx, self);
         }
-    } 
+    }
 }
 
 impl Scoreboard {
@@ -33,8 +32,7 @@ impl Scoreboard {
         away_team: &'static str,
     ) -> Self {
         Self {
-
-            innings: Innings::new(home_team,away_team),
+            innings: Innings::new(home_team, away_team),
             innings_started: false,
             extra_button_hidden: false,
         }
@@ -48,20 +46,42 @@ impl Scoreboard {
 }
 fn team_lists(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
     egui::CentralPanel::default().show(ctx, |ui| {
-        let (home_team,away_team) = scoreboard.innings.return_team_names();
-        let (home_team_players,away_team_players) = scoreboard.innings.return_team_lists();
+        let (home_team, away_team) = scoreboard.innings.return_team_names();
+        let (home_team_players, away_team_players) = scoreboard.innings.return_team_lists();
         ui.columns_const(|[home, away]| {
-            home.add(Label::new(RichText::new(home_team).underline().size(24.0).monospace().color(Color32::WHITE)));
-            home.add(Label::new(RichText::new(home_team_players).monospace().color(Color32::WHITE)));
-            away.add(Label::new(RichText::new(away_team).underline().size(24.0).monospace().color(Color32::WHITE)));
-            away.add(Label::new(RichText::new(away_team_players).monospace().color(Color32::WHITE)));
+            home.add(Label::new(
+                RichText::new(home_team)
+                    .underline()
+                    .size(24.0)
+                    .monospace()
+                    .color(Color32::WHITE),
+            ));
+            home.add(Label::new(
+                RichText::new(home_team_players)
+                    .monospace()
+                    .color(Color32::WHITE),
+            ));
+            away.add(Label::new(
+                RichText::new(away_team)
+                    .underline()
+                    .size(24.0)
+                    .monospace()
+                    .color(Color32::WHITE),
+            ));
+            away.add(Label::new(
+                RichText::new(away_team_players)
+                    .monospace()
+                    .color(Color32::WHITE),
+            ));
         });
         ui.vertical_centered_justified(|ui| {
-            if ui.add_sized([150.0,50.0],Button::new("Start inning")).clicked() {
+            if ui
+                .add_sized([150.0, 50.0], Button::new("Start inning"))
+                .clicked()
+            {
                 scoreboard.innings_started = true;
             }
         });
-
     });
 }
 fn team_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
@@ -105,7 +125,7 @@ fn team_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
             });
         });
 }
-fn batter_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
+fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
     egui::TopBottomPanel::top("id_Batter_Scores")
         .show_separator_line(false)
         .show(ctx, |ui| {
@@ -116,17 +136,26 @@ fn batter_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
                     .size(20.0)
                     .underline(),
             ));
+            let bat_1 = scoreboard
+                .innings
+                .batting_team
+                .return_player_batter_score(0);
+            let bat_2 = scoreboard
+                .innings
+                .batting_team
+                .return_player_batter_score(1);
+
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new("First Last")
+                        RichText::new(bat_1.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new("First Last")
+                        RichText::new(bat_2.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -134,14 +163,14 @@ fn batter_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new("0(0)")
+                        RichText::new(bat_1.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new("0(0)")
+                        RichText::new(bat_2.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -150,7 +179,7 @@ fn batter_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
             });
         });
 }
-fn bowler_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
+fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
     egui::TopBottomPanel::top("id_Bowler_Stats")
         .show_separator_line(false)
         .show(ctx, |ui| {
@@ -161,17 +190,25 @@ fn bowler_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
                     .size(20.0)
                     .underline(),
             ));
+            let bowl_1 = scoreboard
+                .innings
+                .bowling_team
+                .return_player_bowler_score(0);
+            let bowl_2 = scoreboard
+                .innings
+                .bowling_team
+                .return_player_bowler_score(1);
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new("First Last")
+                        RichText::new(bowl_1.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new("First Last")
+                        RichText::new(bowl_2.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -179,14 +216,14 @@ fn bowler_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new("0.0-0-0-0")
+                        RichText::new(bowl_1.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new("0.0-0-0-0")
+                        RichText::new(bowl_2.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -233,7 +270,6 @@ fn button_bar(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                 });
             }
         });
-        
 }
 fn innings_recap(ctx: &egui::Context, _scoreboard: &Scoreboard) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -242,13 +278,12 @@ fn innings_recap(ctx: &egui::Context, _scoreboard: &Scoreboard) {
 }
 fn over_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
     egui::Window::new("Over recap")
-    .anchor(Align2::CENTER_CENTER, [0.0,0.0])
-    .collapsible(false)
-    .movable(false)
-    .resizable(false)
-    .min_size([600.0,300.0])
-    .show(ctx, |ui| {
-        ui.add(Label::new(RichText::new("End of over!")));
-        new_over_button(ui, scoreboard);
-    });
+        .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+        .collapsible(false)
+        .movable(false)
+        .resizable(false)
+        .show(ctx, |ui| {
+            ui.add(Label::new(RichText::new("End of over!")));
+            new_over_button(ui, scoreboard);
+        });
 }

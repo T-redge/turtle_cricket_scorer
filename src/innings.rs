@@ -1,8 +1,8 @@
 use crate::team::Team;
 
 pub struct Innings {
-    batting_team: Team,
-    bowling_team: Team,
+    pub batting_team: Team,
+    pub bowling_team: Team,
 
     inning_length: u8,
     overs_bowled: u8,
@@ -20,15 +20,16 @@ impl Innings {
             balls_bowled: 0,
         }
     }
-        
+
     pub fn ball_bowled(&mut self) {
         self.balls_bowled += 1;
     }
     pub fn over_bowled(&mut self) {
         self.overs_bowled += 1;
         self.balls_bowled = 0;
+        self.bowling_team.player_over_completed(0);
     }
-    
+
     pub fn check_innings_finished(&self) -> bool {
         if self.overs_bowled == self.inning_length {
             return true;
@@ -42,20 +43,19 @@ impl Innings {
         } else {
             return false;
         }
-
     }
-    
-    pub fn return_team_names(&self) -> (String,String) {
+
+    pub fn return_team_names(&self) -> (String, String) {
         (
             self.batting_team.return_team_name(),
-            self.bowling_team.return_team_name()
+            self.bowling_team.return_team_name(),
         )
     }
-    pub fn return_team_lists(&self) -> (String,String) {
+    pub fn return_team_lists(&self) -> (String, String) {
         let batting_team = self.batting_team.return_team_players();
         let bowling_team = self.bowling_team.return_team_players();
 
-        (batting_team,bowling_team)
+        (batting_team, bowling_team)
     }
     pub fn return_overs_label(&self) -> String {
         let mut over_label = "Overs:\t".to_string();

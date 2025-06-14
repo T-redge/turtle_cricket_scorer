@@ -1,17 +1,14 @@
-use crate::players::Player;
-use std::{fs,io::*};
+use crate::player::Player;
+use std::{fs, io::*};
 
 pub struct Team {
     name: &'static str,
-    players: Vec<Player>
+    players: Vec<Player>,
 }
 impl Team {
     pub fn new(name: &'static str) -> Self {
         let players = load_team_file(name);
-        Self {
-            name,
-            players,
-        }
+        Self { name, players }
     }
     pub fn return_team_name(&self) -> String {
         self.name.to_string()
@@ -24,6 +21,27 @@ impl Team {
             team_list.push_str("\n");
         }
         team_list
+    }
+    pub fn return_player_batter_score(&self, player_number: usize) -> (String, String) {
+        let batter_name = self.players[player_number].return_name().to_string();
+        let batter_scores = self.players[player_number].return_batter_scores();
+        (batter_name, batter_scores)
+    }
+    pub fn return_player_bowler_score(&self, player_number: usize) -> (String, String) {
+        let bowler_name = self.players[player_number].return_name().to_string();
+        let bowler_scores = self.players[player_number]
+            .return_bowler_scores()
+            .to_string();
+        (bowler_name, bowler_scores)
+    }
+    pub fn player_scored_runs(&mut self, player: usize, runs: u16) {
+        self.players[player].player_scored_runs(runs);
+    }
+    pub fn player_conceded_runs(&mut self, player: usize, runs: u16) {
+        self.players[player].bowler_conceded_runs(runs);
+    }
+    pub fn player_over_completed(&mut self, player: usize) {
+        self.players[player].bowler_over_completed();
     }
 }
 fn load_team_file(team_name: &'static str) -> Vec<Player> {
