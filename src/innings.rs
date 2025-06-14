@@ -16,7 +16,7 @@ pub struct Innings {
 
     runs_total: u16,
 
-    ball_event: BallEvent
+    ball_event: BallEvent,
 }
 
 impl Innings {
@@ -60,7 +60,6 @@ impl Innings {
         self.balls_bowled += 1;
         self.bowling_team.bowler_ball_completed(0);
         self.batting_team.batter_ball_faced(0);
-        
     }
     pub fn over_bowled(&mut self) {
         self.overs_bowled += 1;

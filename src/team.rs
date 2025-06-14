@@ -42,7 +42,7 @@ impl Team {
     }
     pub fn bowler_ball_completed(&mut self, player: usize) {
         self.players[player].bowler_ball_completed();
-    } 
+    }
     pub fn bowler_conceded_runs(&mut self, player: usize, runs: u16) {
         self.players[player].bowler_conceded_runs(runs);
     }

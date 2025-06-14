@@ -1,4 +1,7 @@
-use crate::{innings::BallEvent, scoreboard::{self, *}};
+use crate::{
+    innings::BallEvent,
+    scoreboard::{self, *},
+};
 use eframe::egui::{self, RichText, Ui, Vec2};
 
 pub fn dot_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
@@ -37,14 +40,12 @@ pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .clicked()
                     {
                         scoreboard.innings.set_ball_event(BallEvent::RunScored(2));
-                       
                     }
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
                         scoreboard.innings.set_ball_event(BallEvent::RunScored(3));
-                       
                     }
                 });
                 ui.centered_and_justified(|ui| {
@@ -53,15 +54,13 @@ pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                             .clicked()
                         {
-                        scoreboard.innings.set_ball_event(BallEvent::RunScored(4));
-                            
+                            scoreboard.innings.set_ball_event(BallEvent::RunScored(4));
                         }
                         if ui_2
                             .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("6"))
                             .clicked()
                         {
-                        scoreboard.innings.set_ball_event(BallEvent::RunScored(6));
-                           
+                            scoreboard.innings.set_ball_event(BallEvent::RunScored(6));
                         }
                     });
                 });
