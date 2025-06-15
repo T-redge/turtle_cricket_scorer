@@ -40,4 +40,7 @@ impl Bowler {
         self.overs += 1;
         self.balls = 0;
     }
+    pub fn wicket_taken(&mut self) {
+        self.wickets += 1;
+    }
 }

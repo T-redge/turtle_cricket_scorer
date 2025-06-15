@@ -4,6 +4,12 @@ pub enum BallEvent {
     Waiting,
     DotBall,
     RunScored(u16),
+    WicketBowler(&'static str),
+    WicketTeam(&'static str),
+    WideBowled(u8),
+    NoballBowled(u8),
+    ByeBowled(u8),
+    LegbyeBowled(u8),
 }
 
 pub struct Innings {
@@ -15,6 +21,12 @@ pub struct Innings {
     balls_bowled: u8,
 
     runs_total: u16,
+    wicket_total: u8,
+
+    wides_total: u8,
+    noball_total: u8,
+    byes_total: u8,
+    legbyes_total: u8,
 
     ball_event: BallEvent,
 }
@@ -30,6 +42,12 @@ impl Innings {
             balls_bowled: 0,
 
             runs_total: 0,
+            wicket_total: 0,
+
+            wides_total: 0,
+            noball_total: 0,
+            byes_total: 0,
+            legbyes_total: 0,
 
             ball_event: BallEvent::Waiting,
         }
@@ -49,7 +67,61 @@ impl Innings {
                 self.runs_scored(runs);
                 self.set_ball_event(BallEvent::Waiting);
             }
+            BallEvent::WicketBowler(wicket) => {
+                self.ball_bowled();
+                self.bowler_wicket_taken();
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::WicketTeam(wicket) => {
+                self.ball_bowled();
+                self.team_wicket_taken();
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::WideBowled(runs) => {
+                self.bowler_wide_bowled(runs);
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::NoballBowled(runs) => {
+                self.bowler_noball_bowled(runs);
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::ByeBowled(runs) => {
+                self.ball_bowled();
+                self.bowler_byes_bowled(runs);
+                self.set_ball_event(BallEvent::Waiting);
+            }
+            BallEvent::LegbyeBowled(runs) => {
+                self.ball_bowled();
+                self.bowler_legbyes_bowled(runs);
+                self.set_ball_event(BallEvent::Waiting);
+            }
         }
+    }
+    pub fn bowler_wide_bowled(&mut self, runs: u8) {
+        self.wides_total += runs;
+        self.runs_total += runs as u16;
+        self.bowling_team.bowler_conceded_runs(0, runs.into());
+    }
+    pub fn bowler_noball_bowled(&mut self, runs: u8) {
+        self.noball_total += 1;
+        self.runs_total += runs as u16 + 1;
+        self.batting_team.batter_scored_runs(0, runs.into());
+        self.bowling_team.bowler_conceded_runs(0, (runs + 1).into());
+    }
+    pub fn bowler_byes_bowled(&mut self, runs: u8) {
+        self.byes_total += runs;
+        self.runs_total += runs as u16;
+    }
+    pub fn bowler_legbyes_bowled(&mut self, runs: u8) {
+        self.legbyes_total += runs;
+        self.runs_total += runs as u16;
+    }
+    pub fn bowler_wicket_taken(&mut self) {
+        self.wicket_total += 1;
+        self.bowling_team.bowler_wicket_taken(0);
+    }
+    pub fn team_wicket_taken(&mut self) {
+        self.wicket_total += 1;
     }
     pub fn runs_scored(&mut self, runs: u16) {
         self.runs_total += runs;
@@ -66,7 +138,6 @@ impl Innings {
         self.balls_bowled = 0;
         self.bowling_team.bowler_over_completed(0);
     }
-
     pub fn check_innings_finished(&self) -> bool {
         if self.overs_bowled == self.inning_length {
             return true;
@@ -106,7 +177,7 @@ impl Innings {
     pub fn return_team_score(&self) -> String {
         let mut team_score = self.return_team_total().to_string();
         team_score.push_str("/");
-        team_score.push_str("0");
+        team_score.push_str(&self.return_team_wickets().to_string());
         team_score
     }
     fn return_inning_length(&self) -> u8 {
@@ -120,5 +191,8 @@ impl Innings {
     }
     fn return_team_total(&self) -> u16 {
         self.runs_total
+    }
+    fn return_team_wickets(&self) -> u8 {
+        self.wicket_total
     }
 }

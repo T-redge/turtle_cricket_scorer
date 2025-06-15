@@ -1,6 +1,6 @@
 use crate::{
     innings::BallEvent,
-    scoreboard::{self, *},
+    scoreboard::*,
 };
 use eframe::egui::{self, RichText, Ui, Vec2};
 
@@ -68,7 +68,7 @@ pub fn runs_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         },
     );
 }
-pub fn wicket_ball_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
+pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     let wicket_button = ui.add_sized(Vec2 { x: 100.0, y: 50.0 }, egui::Button::new("Wicket"));
     let popup_id = ui.make_persistent_id("Id_Wicket");
     if wicket_button.clicked() {
@@ -91,21 +91,27 @@ pub fn wicket_ball_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
                             egui::Button::new(RichText::new("Bowled").size(12.0)),
                         )
                         .clicked()
-                    {}
+                    {
+                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Bowled"));
+                    }
                     if ui_2
                         .add_sized(
                             Vec2 { x: 50.0, y: 20.0 },
                             egui::Button::new(RichText::new("Caught").size(12.0)),
                         )
                         .clicked()
-                    {}
+                    {
+                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Caught"));
+                    }
                     if ui_3
                         .add_sized(
                             Vec2 { x: 50.0, y: 20.0 },
                             egui::Button::new(RichText::new("LBW").size(12.0)),
                         )
                         .clicked()
-                    {}
+                    {
+                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Lbw"));
+                    }
                 });
                 ui.centered_and_justified(|ui| {
                     ui.columns_const(|[ui_1, ui_2]| {
@@ -115,14 +121,18 @@ pub fn wicket_ball_button(ui: &mut Ui, _scoreboard: &mut Scoreboard) {
                                 egui::Button::new(RichText::new("Stumped").size(12.0)),
                             )
                             .clicked()
-                        {}
+                        {
+                            scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Stumped"));
+                        }
                         if ui_2
                             .add_sized(
                                 Vec2 { x: 50.0, y: 20.0 },
                                 egui::Button::new(RichText::new("Run Out").size(12.0)),
                             )
                             .clicked()
-                        {}
+                        {
+                            scoreboard.innings.set_ball_event(BallEvent::WicketTeam("Run Out"));
+                        }
                     });
                 });
             });
@@ -158,18 +168,21 @@ pub fn wide_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::WideBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::WideBowled(2));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::WideBowled(3));
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -180,12 +193,14 @@ pub fn wide_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::WideBowled(4));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("5"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::WideBowled(5));
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -214,18 +229,23 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(2));
+
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_3
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(3));
+
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -236,12 +256,16 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(4));
+
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("6"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(6));
+
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -270,24 +294,28 @@ pub fn bye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::ByeBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::ByeBowled(2));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::ByeBowled(3));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::ByeBowled(4));
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -316,24 +344,28 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(2));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(3));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
+                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(4));
                         scoreboard.set_hide_button_bool(false);
                     }
                 });

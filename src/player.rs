@@ -44,6 +44,9 @@ impl Player {
     pub fn batter_ball_faced(&mut self) {
         self.batter.ball_faced();
     }
+    pub fn bowler_taken_wicket(&mut self) {
+        self.bowler.wicket_taken();
+    }
     pub fn bowler_ball_completed(&mut self) {
         self.bowler.ball_completed();
     }

@@ -49,6 +49,9 @@ impl Team {
     pub fn bowler_over_completed(&mut self, player: usize) {
         self.players[player].bowler_over_completed();
     }
+    pub fn bowler_wicket_taken(&mut self, player: usize) {
+        self.players[player].bowler_taken_wicket();
+    }
 }
 fn load_team_file(team_name: &'static str) -> Vec<Player> {
     let mut tmp = Vec::new();
