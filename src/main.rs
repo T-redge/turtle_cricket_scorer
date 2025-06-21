@@ -12,7 +12,7 @@ fn main() {
             inner_size: Some(Vec2 { x: 640.0, y: 360.0 }),
             ..Default::default()
         },
-        ..Default::default()    
+        ..Default::default()
     };
     let home_team = "Edgewater";
     let away_team = "Kingsway";

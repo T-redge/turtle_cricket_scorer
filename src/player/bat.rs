@@ -1,4 +1,4 @@
-#[derive(Copy, Clone,PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum BatterStrike {
     OnStrike,
     OffStrike,
@@ -11,7 +11,11 @@ pub struct Batter {
 }
 impl Batter {
     pub fn new() -> Self {
-        Self { balls: 0, runs: 0, batter_strike: BatterStrike::OffStrike }
+        Self {
+            balls: 0,
+            runs: 0,
+            batter_strike: BatterStrike::OffStrike,
+        }
     }
     pub fn return_balls_faced(&self) -> u16 {
         self.balls

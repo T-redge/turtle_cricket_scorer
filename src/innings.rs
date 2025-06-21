@@ -1,4 +1,4 @@
-use crate::{team::Team, player::bat::*};
+use crate::{player::bat::*, team::Team};
 
 pub enum BallEvent {
     Waiting,
@@ -21,6 +21,9 @@ pub struct Innings {
     balls_bowled: u8,
 
     over_total: u8,
+    bat1_over_total: u8,
+    bat2_over_total: u8,
+
     runs_total: u16,
     wicket_total: u8,
 
@@ -43,6 +46,9 @@ impl Innings {
             balls_bowled: 0,
 
             over_total: 0,
+            bat1_over_total: 0,
+            bat2_over_total: 0,
+
             runs_total: 0,
             wicket_total: 0,
 
@@ -102,6 +108,7 @@ impl Innings {
     pub fn bowler_wide_bowled(&mut self, runs: u8) {
         self.wides_total += runs;
         self.runs_total += runs as u16;
+        self.over_total += runs;
 
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team.bowler_conceded_runs(bowler, runs.into());
@@ -109,18 +116,33 @@ impl Innings {
     pub fn bowler_noball_bowled(&mut self, runs: u8) {
         self.noball_total += 1;
         self.runs_total += runs as u16 + 1;
-        self.batting_team.batter_scored_runs(0, runs.into());
+        self.over_total += runs + 1;
+
+        let b1 = self.batting_team.return_batting_pair().0;
+        let b2 = self.batting_team.return_batting_pair().1;
+
+        if self.batting_team.players[b1].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_scored_runs(b1, runs as u16);
+            self.bat1_over_total += runs as u8;
+        }
+        if self.batting_team.players[b2].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_scored_runs(b2, runs as u16);
+            self.bat2_over_total += runs as u8;
+        }
 
         let bowler = self.bowling_team.return_current_bowler();
-        self.bowling_team.bowler_conceded_runs(bowler, (runs + 1).into());
+        self.bowling_team
+            .bowler_conceded_runs(bowler, (runs + 1).into());
     }
     pub fn bowler_byes_bowled(&mut self, runs: u8) {
         self.byes_total += runs;
         self.runs_total += runs as u16;
+        self.over_total += runs;
     }
     pub fn bowler_legbyes_bowled(&mut self, runs: u8) {
         self.legbyes_total += runs;
         self.runs_total += runs as u16;
+        self.over_total += runs;
     }
     pub fn bowler_wicket_taken(&mut self) {
         self.wicket_total += 1;
@@ -133,14 +155,17 @@ impl Innings {
     }
     pub fn runs_scored(&mut self, runs: u16) {
         self.runs_total += runs;
+        self.over_total += runs as u8;
         let b1 = self.batting_team.return_batting_pair().0;
         let b2 = self.batting_team.return_batting_pair().1;
 
         if self.batting_team.players[b1].return_batter_strike() == BatterStrike::OnStrike {
             self.batting_team.batter_scored_runs(b1, runs);
+            self.bat1_over_total += runs as u8;
         }
         if self.batting_team.players[b2].return_batter_strike() == BatterStrike::OnStrike {
             self.batting_team.batter_scored_runs(b2, runs);
+            self.bat2_over_total += runs as u8;
         }
 
         let bowler = self.bowling_team.return_current_bowler();
@@ -151,7 +176,7 @@ impl Innings {
 
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team.bowler_ball_completed(bowler);
-        
+
         let b1 = self.batting_team.return_batting_pair().0;
         let b2 = self.batting_team.return_batting_pair().1;
 
@@ -222,6 +247,30 @@ impl Innings {
         extras.push_str(&self.return_legbyes().to_string());
         extras.push_str(" )\n");
         extras
+    }
+    pub fn return_over_totals(&self) -> String {
+        let batters = self.batting_team.return_batting_pair();
+        let mut over_total = String::from("Over total:\t");
+        over_total.push_str(&self.return_over_total().to_string());
+        over_total.push_str("\n\n");
+        over_total.push_str(&self.batting_team.players[batters.0].return_name());
+        over_total.push_str(":\t");
+        over_total.push_str(&self.return_bat1_over_scores().to_string());
+        over_total.push_str("\n");
+        over_total.push_str(&self.batting_team.players[batters.1].return_name());
+        over_total.push_str(":\t");
+        over_total.push_str(&self.return_bat2_over_scores().to_string());
+
+        over_total
+    }
+    fn return_bat1_over_scores(&self) -> u8 {
+        self.bat1_over_total
+    }
+    fn return_bat2_over_scores(&self) -> u8 {
+        self.bat2_over_total
+    }
+    fn return_over_total(&self) -> u8 {
+        self.over_total
     }
     fn return_wides(&self) -> u8 {
         self.wides_total

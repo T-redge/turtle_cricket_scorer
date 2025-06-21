@@ -42,9 +42,9 @@ impl Team {
         }
         player_num
     }
-    pub fn return_batting_pair(&self) -> (usize,usize) {
+    pub fn return_batting_pair(&self) -> (usize, usize) {
         let mut player_num = 0;
-        let (mut b_1, mut b_2) = (0,0);
+        let (mut b_1, mut b_2) = (0, 0);
         while player_num < 11 {
             if self.players[player_num].return_batting_status() == BattingStatus::Batting {
                 b_1 = player_num;
@@ -63,7 +63,7 @@ impl Team {
             }
             player_num += 1;
         }
-        let batters = (b_1,b_2);
+        let batters = (b_1, b_2);
         batters
     }
     pub fn return_player_batter_score(&self, player_number: usize) -> (String, String) {

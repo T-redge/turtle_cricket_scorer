@@ -2,13 +2,13 @@ pub mod bat;
 use crate::player::{bat::*, bowl::Bowler};
 pub mod bowl;
 pub mod field;
-#[derive(Clone,Copy,PartialEq)]
-pub enum BattingStatus{
+#[derive(Clone, Copy, PartialEq)]
+pub enum BattingStatus {
     Waiting,
     Batting,
     _Out,
 }
-#[derive(Clone,Copy,PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum BowlingStatus {
     Waiting,
     Bowling,
@@ -16,7 +16,7 @@ pub enum BowlingStatus {
 }
 pub struct Player {
     name: String,
-    
+
     batter: Batter,
     batting_status: BattingStatus,
 
@@ -27,7 +27,7 @@ impl Player {
     pub fn new(name: String) -> Self {
         Self {
             name,
-            
+
             batter: Batter::new(),
             batting_status: BattingStatus::Waiting,
 

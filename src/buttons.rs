@@ -1,7 +1,4 @@
-use crate::{
-    innings::BallEvent,
-    scoreboard::*,
-};
+use crate::{innings::BallEvent, scoreboard::*};
 use eframe::egui::{self, RichText, Ui, Vec2};
 
 pub fn dot_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
@@ -92,7 +89,9 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         )
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Bowled"));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::WicketBowler("Bowled"));
                     }
                     if ui_2
                         .add_sized(
@@ -101,7 +100,9 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         )
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Caught"));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::WicketBowler("Caught"));
                     }
                     if ui_3
                         .add_sized(
@@ -110,7 +111,9 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         )
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Lbw"));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::WicketBowler("Lbw"));
                     }
                 });
                 ui.centered_and_justified(|ui| {
@@ -122,7 +125,9 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             )
                             .clicked()
                         {
-                            scoreboard.innings.set_ball_event(BallEvent::WicketBowler("Stumped"));
+                            scoreboard
+                                .innings
+                                .set_ball_event(BallEvent::WicketBowler("Stumped"));
                         }
                         if ui_2
                             .add_sized(
@@ -131,7 +136,9 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             )
                             .clicked()
                         {
-                            scoreboard.innings.set_ball_event(BallEvent::WicketTeam("Run Out"));
+                            scoreboard
+                                .innings
+                                .set_ball_event(BallEvent::WicketTeam("Run Out"));
                         }
                     });
                 });
@@ -229,14 +236,18 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(1));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::NoballBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(2));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::NoballBowled(2));
 
                         scoreboard.set_hide_button_bool(false);
                     }
@@ -244,7 +255,9 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(3));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::NoballBowled(3));
 
                         scoreboard.set_hide_button_bool(false);
                     }
@@ -256,7 +269,9 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(4));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::NoballBowled(4));
 
                         scoreboard.set_hide_button_bool(false);
                     }
@@ -264,7 +279,9 @@ pub fn noball_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("6"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::NoballBowled(6));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::NoballBowled(6));
 
                         scoreboard.set_hide_button_bool(false);
                     }
@@ -344,28 +361,36 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("1"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(1));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::LegbyeBowled(1));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("2"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(2));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::LegbyeBowled(2));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_1
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("3"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(3));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::LegbyeBowled(3));
                         scoreboard.set_hide_button_bool(false);
                     }
                     if ui_2
                         .add_sized(Vec2 { x: 25.0, y: 20.0 }, egui::Button::new("4"))
                         .clicked()
                     {
-                        scoreboard.innings.set_ball_event(BallEvent::LegbyeBowled(4));
+                        scoreboard
+                            .innings
+                            .set_ball_event(BallEvent::LegbyeBowled(4));
                         scoreboard.set_hide_button_bool(false);
                     }
                 });
@@ -374,17 +399,22 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     );
 }
 pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
-    if ui
-        .add_sized(Vec2 { x: 150.0, y: 50.0 }, egui::Button::new("New Over"))
-        .clicked()
-    {
-        scoreboard.innings.over_bowled();
-        let last_over = scoreboard.innings.bowling_team.return_last_over_bowler();
-        if last_over < 11 {
-            scoreboard.innings.bowling_team.players[last_over].set_bowler_status(crate::player::BowlingStatus::Waiting);
-        }
-        let bowler_over = scoreboard.innings.bowling_team.return_current_bowler();
-        scoreboard.innings.bowling_team.players[bowler_over].set_bowler_status(crate::player::BowlingStatus::BowledLastOver);
+        ui.vertical_centered_justified(|ui| {
+
+            if ui
+            .add_sized(Vec2 { x: 150.0, y: 50.0 }, egui::Button::new("New Over"))
+            .clicked()
+            {
+                scoreboard.innings.over_bowled();
+                let last_over = scoreboard.innings.bowling_team.return_last_over_bowler();
+                if last_over < 11 {
+                    scoreboard.innings.bowling_team.players[last_over]
+                    .set_bowler_status(crate::player::BowlingStatus::Waiting);
+            }
+            let bowler_over = scoreboard.innings.bowling_team.return_current_bowler();
+            scoreboard.innings.bowling_team.players[bowler_over]
+            .set_bowler_status(crate::player::BowlingStatus::BowledLastOver);
         scoreboard.set_bowler_picked(false);
     }
+});
 }

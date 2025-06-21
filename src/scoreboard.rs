@@ -1,4 +1,8 @@
-use crate::{buttons::*, innings::*, player::{bat::BatterStrike, BowlingStatus}};
+use crate::{
+    buttons::*,
+    innings::*,
+    player::{BowlingStatus, bat::BatterStrike},
+};
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
     pub innings: Innings,
@@ -21,7 +25,7 @@ impl eframe::App for Scoreboard {
         } else if !self.innings.check_innings_finished() {
             if !self.batters_picked {
                 pick_batters(ctx, self);
-            } else  if !self.on_strike_selected {
+            } else if !self.on_strike_selected {
                 set_batter_strike(ctx, self);
             } else if !self.bowler_picked {
                 pick_bowler(ctx, self);
@@ -55,11 +59,9 @@ impl Scoreboard {
             on_strike_selected: false,
             bowler_picked: false,
 
-
-
-            player_number: vec![0,1,2,3,4,5,6,7,8,9,10],
-            selected_batters: vec![false;11],
-            selected_bowlers: vec![false;11],
+            player_number: vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            selected_batters: vec![false; 11],
+            selected_bowlers: vec![false; 11],
         }
     }
     pub fn set_hide_button_bool(&mut self, set: bool) {
@@ -165,8 +167,14 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                     .underline(),
             ));
             let batters = scoreboard.innings.batting_team.return_batting_pair();
-            let b_1 = scoreboard.innings.batting_team.return_player_batter_score(batters.0);
-            let b_2 = scoreboard.innings.batting_team.return_player_batter_score(batters.1);
+            let b_1 = scoreboard
+                .innings
+                .batting_team
+                .return_player_batter_score(batters.0);
+            let b_2 = scoreboard
+                .innings
+                .batting_team
+                .return_player_batter_score(batters.1);
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
@@ -218,7 +226,10 @@ fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     if p_1 < 11 {
-                        let bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_1);
+                        let bowler = scoreboard
+                            .innings
+                            .bowling_team
+                            .return_player_bowler_score(p_1);
                         ui.add(Label::new(
                             RichText::new(bowler.0)
                                 .color(Color32::WHITE)
@@ -235,12 +246,15 @@ fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                     }
                     ui.end_row();
                     if p_2 < 11 {
-                        let past_bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_2);
+                        let past_bowler = scoreboard
+                            .innings
+                            .bowling_team
+                            .return_player_bowler_score(p_2);
                         ui.add(Label::new(
-                        RichText::new(past_bowler.0)
-                            .color(Color32::WHITE)
-                            .monospace()
-                            .size(12.0),
+                            RichText::new(past_bowler.0)
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
                         ));
                     } else {
                         ui.add(Label::new(
@@ -253,7 +267,10 @@ fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     if p_1 < 11 {
-                        let bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_1);
+                        let bowler = scoreboard
+                            .innings
+                            .bowling_team
+                            .return_player_bowler_score(p_1);
                         ui.add(Label::new(
                             RichText::new(bowler.1)
                                 .color(Color32::WHITE)
@@ -270,12 +287,15 @@ fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                     }
                     ui.end_row();
                     if p_2 < 11 {
-                        let past_bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_2);
+                        let past_bowler = scoreboard
+                            .innings
+                            .bowling_team
+                            .return_player_bowler_score(p_2);
                         ui.add(Label::new(
-                        RichText::new(past_bowler.1)
-                            .color(Color32::WHITE)
-                            .monospace()
-                            .size(12.0),
+                            RichText::new(past_bowler.1)
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
                         ));
                     } else {
                         ui.add(Label::new(
@@ -341,82 +361,138 @@ fn over_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
         .resizable(false)
         .show(ctx, |ui| {
             ui.add(Label::new(RichText::new("End of over!")));
+            ui.add(Label::new(
+                RichText::new(scoreboard.innings.return_over_totals())
+                    .color(Color32::WHITE)
+                    .monospace()
+                    .size(20.0),
+            ));
             new_over_button(ui, scoreboard);
         });
 }
 fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
-    egui::Window::new("Select Batter").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
-        for p in &scoreboard.player_number {
-            ui.add(
-            egui::Checkbox::new(
-            &mut scoreboard.selected_batters[*p],
-            scoreboard.innings.batting_team.players[*p].return_name()));
-        }
-        for player in &scoreboard.player_number {
-            if scoreboard.selected_batters[*player] {
-                scoreboard
-                .innings.batting_team.players[*player].set_batter_status(crate::player::BattingStatus::Batting);
-        }
-    }
-    if ui
-        .add_sized(egui::Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Openers"))
-        .clicked()
-    {
-        scoreboard.batters_picked = true;
-    }
-    });
+    egui::Window::new("Select Batter")
+        .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+        .movable(false)
+        .collapsible(false)
+        .resizable(false)
+        .show(ctx, |ui| {
+            for p in &scoreboard.player_number {
+                ui.add(egui::Checkbox::new(
+                    &mut scoreboard.selected_batters[*p],
+                    scoreboard.innings.batting_team.players[*p].return_name(),
+                ));
+            }
+            for player in &scoreboard.player_number {
+                if scoreboard.selected_batters[*player] {
+                    scoreboard.innings.batting_team.players[*player]
+                        .set_batter_status(crate::player::BattingStatus::Batting);
+                }
+            }
+            if ui
+                .add_sized(
+                    egui::Vec2 { x: 150.0, y: 50.0 },
+                    Button::new("Select Openers"),
+                )
+                .clicked()
+            {
+                scoreboard.batters_picked = true;
+            }
+        });
 }
 fn set_batter_strike(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
-    egui::Window::new("Choose batter on-strike").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
-        let batters = scoreboard.innings.batting_team.return_batting_pair();
-        ui.columns_const(|[bat_1,bat_2]| {
-
-            if bat_1.add_sized([150.0,50.0], Button::new(
-                RichText::new(
+    egui::Window::new("Choose batter on-strike")
+        .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+        .movable(false)
+        .collapsible(false)
+        .resizable(false)
+        .show(ctx, |ui| {
+            let batters = scoreboard.innings.batting_team.return_batting_pair();
+            ui.columns_const(|[bat_1, bat_2]| {
+                if bat_1
+                    .add_sized(
+                        [150.0, 50.0],
+                        Button::new(
+                            RichText::new(
+                                scoreboard.innings.batting_team.players[batters.0].return_name(),
+                            )
+                            .color(Color32::WHITE)
+                            .monospace()
+                            .size(20.0),
+                        ),
+                    )
+                    .clicked()
+                {
                     scoreboard.innings.batting_team.players[batters.0]
-                    .return_name()).color(Color32::WHITE).monospace().size(20.0))).clicked() {
-                        scoreboard.innings.batting_team.players[batters.0].set_batter_strike(BatterStrike::OnStrike);
-                        scoreboard.on_strike_selected = true;
-                    }
-            if bat_2.add_sized([150.0,50.0], Button::new(
-                        RichText::new(
-                            scoreboard.innings.batting_team.players[batters.1]
-                            .return_name()).color(Color32::WHITE).monospace().size(20.0))).clicked() {
-                                scoreboard.innings.batting_team.players[batters.1].set_batter_strike(BatterStrike::OnStrike);
-                                scoreboard.on_strike_selected = true;
-                    }
+                        .set_batter_strike(BatterStrike::OnStrike);
+                    scoreboard.on_strike_selected = true;
+                }
+                if bat_2
+                    .add_sized(
+                        [150.0, 50.0],
+                        Button::new(
+                            RichText::new(
+                                scoreboard.innings.batting_team.players[batters.1].return_name(),
+                            )
+                            .color(Color32::WHITE)
+                            .monospace()
+                            .size(20.0),
+                        ),
+                    )
+                    .clicked()
+                {
+                    scoreboard.innings.batting_team.players[batters.1]
+                        .set_batter_strike(BatterStrike::OnStrike);
+                    scoreboard.on_strike_selected = true;
+                }
             });
         });
 }
 fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
-    egui::Window::new("Select Bowler").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
-        for p in &scoreboard.player_number {
-            if scoreboard.innings.bowling_team.players[*p].return_bowler_status() == BowlingStatus::BowledLastOver {
-                ui.add_enabled(false,
-                    egui::Checkbox::new(
-                    &mut scoreboard.selected_bowlers[*p],
-                    scoreboard.innings.bowling_team.players[*p].return_name()));
-            } else {
-                ui.add_enabled(true,
-                    egui::Checkbox::new(
-                    &mut scoreboard.selected_bowlers[*p],
-                    scoreboard.innings.bowling_team.players[*p].return_name()));
+    egui::Window::new("Select Bowler")
+        .anchor(Align2::CENTER_CENTER, [0.0, 0.0])
+        .movable(false)
+        .collapsible(false)
+        .resizable(false)
+        .show(ctx, |ui| {
+            for p in &scoreboard.player_number {
+                if scoreboard.innings.bowling_team.players[*p].return_bowler_status()
+                    == BowlingStatus::BowledLastOver
+                {
+                    ui.add_enabled(
+                        false,
+                        egui::Checkbox::new(
+                            &mut scoreboard.selected_bowlers[*p],
+                            scoreboard.innings.bowling_team.players[*p].return_name(),
+                        ),
+                    );
+                } else {
+                    ui.add_enabled(
+                        true,
+                        egui::Checkbox::new(
+                            &mut scoreboard.selected_bowlers[*p],
+                            scoreboard.innings.bowling_team.players[*p].return_name(),
+                        ),
+                    );
+                }
             }
-        }
-        for player in &scoreboard.player_number {
-            if scoreboard.selected_bowlers[*player] {
-                scoreboard
-                .innings.bowling_team.players[*player].set_bowler_status(crate::player::BowlingStatus::Bowling);
-        }
-    }
-    if ui
-        .add_sized(egui::Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Bowler"))
-        .clicked()
-    {
-        scoreboard.bowler_picked = true;
-        for player in &scoreboard.player_number {
-            scoreboard.selected_bowlers[*player] = false;
-        }
-    }
-    });
+            for player in &scoreboard.player_number {
+                if scoreboard.selected_bowlers[*player] {
+                    scoreboard.innings.bowling_team.players[*player]
+                        .set_bowler_status(crate::player::BowlingStatus::Bowling);
+                }
+            }
+            if ui
+                .add_sized(
+                    egui::Vec2 { x: 150.0, y: 50.0 },
+                    Button::new("Select Bowler"),
+                )
+                .clicked()
+            {
+                scoreboard.bowler_picked = true;
+                for player in &scoreboard.player_number {
+                    scoreboard.selected_bowlers[*player] = false;
+                }
+            }
+        });
 }
