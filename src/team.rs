@@ -1,4 +1,4 @@
-use crate::player::{BattingStatus, Player};
+use crate::player::{BattingStatus, BowlingStatus, Player};
 use std::{fs, io::*};
 
 pub struct Team {
@@ -22,6 +22,26 @@ impl Team {
         }
         team_list
     }
+    pub fn return_current_bowler(&self) -> usize {
+        let mut player_num = 0;
+        while player_num < 11 {
+            if self.players[player_num].return_bowler_status() == BowlingStatus::Bowling {
+                break;
+            }
+            player_num += 1;
+        }
+        player_num
+    }
+    pub fn return_last_over_bowler(&self) -> usize {
+        let mut player_num = 0;
+        while player_num < 11 {
+            if self.players[player_num].return_bowler_status() == BowlingStatus::BowledLastOver {
+                break;
+            }
+            player_num += 1;
+        }
+        player_num
+    }
     pub fn return_batting_pair(&self) -> (usize,usize) {
         let mut player_num = 0;
         let (mut b_1, mut b_2) = (0,0);
@@ -34,10 +54,10 @@ impl Team {
             player_num += 1;
         }
         while player_num < 11 {
+            if self.players[player_num].return_name() == self.players[b_1].return_name() {
+                player_num += 1;
+            }
             if self.players[player_num].return_batting_status() == BattingStatus::Batting {
-                if self.players[player_num].return_name() == self.players[b_1].return_name() {
-                    continue;
-                }
                 b_2 = player_num;
                 break;
             }

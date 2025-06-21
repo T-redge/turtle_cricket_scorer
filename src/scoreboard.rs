@@ -1,13 +1,16 @@
-use crate::{buttons::*, innings::*};
+use crate::{buttons::*, innings::*, player::{bat::BatterStrike, BowlingStatus}};
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
     pub innings: Innings,
     innings_started: bool,
     extra_button_hidden: bool,
     batters_picked: bool,
+    on_strike_selected: bool,
+    bowler_picked: bool,
 
     player_number: Vec<usize>,
     selected_batters: Vec<bool>,
+    selected_bowlers: Vec<bool>,
 }
 
 impl eframe::App for Scoreboard {
@@ -18,6 +21,10 @@ impl eframe::App for Scoreboard {
         } else if !self.innings.check_innings_finished() {
             if !self.batters_picked {
                 pick_batters(ctx, self);
+            } else  if !self.on_strike_selected {
+                set_batter_strike(ctx, self);
+            } else if !self.bowler_picked {
+                pick_bowler(ctx, self);
             } else {
                 if self.innings.check_over_finished() {
                     over_recap(ctx, self);
@@ -45,9 +52,14 @@ impl Scoreboard {
             innings_started: false,
             extra_button_hidden: false,
             batters_picked: false,
+            on_strike_selected: false,
+            bowler_picked: false,
+
+
 
             player_number: vec![0,1,2,3,4,5,6,7,8,9,10],
             selected_batters: vec![false;11],
+            selected_bowlers: vec![false;11],
         }
     }
     pub fn set_hide_button_bool(&mut self, set: bool) {
@@ -55,6 +67,9 @@ impl Scoreboard {
     }
     pub fn return_hide_button_bool(&self) -> bool {
         self.extra_button_hidden
+    }
+    pub fn set_bowler_picked(&mut self, set: bool) {
+        self.bowler_picked = set;
     }
 }
 fn team_lists(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
@@ -149,23 +164,20 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                     .size(20.0)
                     .underline(),
             ));
-            let bat_1 = scoreboard
-                .innings
-                .batting_team.return_batting_pair().0;
-            let bat_2 = scoreboard
-                .innings
-                .batting_team.return_batting_pair().1;
+            let batters = scoreboard.innings.batting_team.return_batting_pair();
+            let b_1 = scoreboard.innings.batting_team.return_player_batter_score(batters.0);
+            let b_2 = scoreboard.innings.batting_team.return_player_batter_score(batters.1);
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new(scoreboard.innings.batting_team.players[bat_1].return_name())
+                        RichText::new(b_1.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new(scoreboard.innings.batting_team.players[bat_2].return_name())
+                        RichText::new(b_2.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -173,14 +185,14 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new(scoreboard.innings.batting_team.players[bat_1].return_batter_scores())
+                        RichText::new(b_1.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new(scoreboard.innings.batting_team.players[bat_2].return_batter_scores())
+                        RichText::new(b_2.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -200,55 +212,90 @@ fn bowler_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                     .size(20.0)
                     .underline(),
             ));
-            let bowl_1 = scoreboard
-                .innings
-                .bowling_team
-                .return_player_bowler_score(0);
-            let bowl_2 = scoreboard
-                .innings
-                .bowling_team
-                .return_player_bowler_score(1);
+            let p_1 = scoreboard.innings.bowling_team.return_current_bowler();
+            let p_2 = scoreboard.innings.bowling_team.return_last_over_bowler();
+
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
-                    ui.add(Label::new(
-                        RichText::new(bowl_1.0)
-                            .color(Color32::WHITE)
-                            .monospace()
-                            .size(12.0),
-                    ));
+                    if p_1 < 11 {
+                        let bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_1);
+                        ui.add(Label::new(
+                            RichText::new(bowler.0)
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    } else {
+                        ui.add(Label::new(
+                            RichText::new(" ")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                     ui.end_row();
-                    ui.add(Label::new(
-                        RichText::new(bowl_2.0)
+                    if p_2 < 11 {
+                        let past_bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_2);
+                        ui.add(Label::new(
+                        RichText::new(past_bowler.0)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
-                    ));
+                        ));
+                    } else {
+                        ui.add(Label::new(
+                            RichText::new("")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                 });
                 ui_2.horizontal_wrapped(|ui| {
-                    ui.add(Label::new(
-                        RichText::new(bowl_1.1)
-                            .color(Color32::WHITE)
-                            .monospace()
-                            .size(12.0),
-                    ));
+                    if p_1 < 11 {
+                        let bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_1);
+                        ui.add(Label::new(
+                            RichText::new(bowler.1)
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    } else {
+                        ui.add(Label::new(
+                            RichText::new("")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                     ui.end_row();
-                    ui.add(Label::new(
-                        RichText::new(bowl_2.1)
+                    if p_2 < 11 {
+                        let past_bowler = scoreboard.innings.bowling_team.return_player_bowler_score(p_2);
+                        ui.add(Label::new(
+                        RichText::new(past_bowler.1)
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
-                    ));
+                        ));
+                    } else {
+                        ui.add(Label::new(
+                            RichText::new("")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                 });
             });
         });
 }
-fn extra_scores(ctx: &egui::Context, _scoreboard: &Scoreboard) {
+fn extra_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
     egui::TopBottomPanel::top("id_Extra_Scores")
         .show_separator_line(false)
         .show(ctx, |ui| {
             ui.horizontal(|ui| {
                 ui.add(Label::new(
-                    RichText::new("\nExtras ( Wd: 0, Nb: 0, B: 0, Lb: 0 )\n")
+                    RichText::new(scoreboard.innings.return_team_extras())
                         .color(Color32::WHITE)
                         .monospace()
                         .size(16.0),
@@ -316,6 +363,60 @@ fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
         .clicked()
     {
         scoreboard.batters_picked = true;
+    }
+    });
+}
+fn set_batter_strike(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
+    egui::Window::new("Choose batter on-strike").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
+        let batters = scoreboard.innings.batting_team.return_batting_pair();
+        ui.columns_const(|[bat_1,bat_2]| {
+
+            if bat_1.add_sized([150.0,50.0], Button::new(
+                RichText::new(
+                    scoreboard.innings.batting_team.players[batters.0]
+                    .return_name()).color(Color32::WHITE).monospace().size(20.0))).clicked() {
+                        scoreboard.innings.batting_team.players[batters.0].set_batter_strike(BatterStrike::OnStrike);
+                        scoreboard.on_strike_selected = true;
+                    }
+            if bat_2.add_sized([150.0,50.0], Button::new(
+                        RichText::new(
+                            scoreboard.innings.batting_team.players[batters.1]
+                            .return_name()).color(Color32::WHITE).monospace().size(20.0))).clicked() {
+                                scoreboard.innings.batting_team.players[batters.1].set_batter_strike(BatterStrike::OnStrike);
+                                scoreboard.on_strike_selected = true;
+                    }
+            });
+        });
+}
+fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
+    egui::Window::new("Select Bowler").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
+        for p in &scoreboard.player_number {
+            if scoreboard.innings.bowling_team.players[*p].return_bowler_status() == BowlingStatus::BowledLastOver {
+                ui.add_enabled(false,
+                    egui::Checkbox::new(
+                    &mut scoreboard.selected_bowlers[*p],
+                    scoreboard.innings.bowling_team.players[*p].return_name()));
+            } else {
+                ui.add_enabled(true,
+                    egui::Checkbox::new(
+                    &mut scoreboard.selected_bowlers[*p],
+                    scoreboard.innings.bowling_team.players[*p].return_name()));
+            }
+        }
+        for player in &scoreboard.player_number {
+            if scoreboard.selected_bowlers[*player] {
+                scoreboard
+                .innings.bowling_team.players[*player].set_bowler_status(crate::player::BowlingStatus::Bowling);
+        }
+    }
+    if ui
+        .add_sized(egui::Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Bowler"))
+        .clicked()
+    {
+        scoreboard.bowler_picked = true;
+        for player in &scoreboard.player_number {
+            scoreboard.selected_bowlers[*player] = false;
+        }
     }
     });
 }

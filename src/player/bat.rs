@@ -1,4 +1,4 @@
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone,PartialEq)]
 pub enum BatterStrike {
     OnStrike,
     OffStrike,
@@ -27,5 +27,8 @@ impl Batter {
     }
     pub fn runs_scored(&mut self, runs: u16) {
         self.runs += runs;
+    }
+    pub fn set_batter_strike(&mut self, strike: BatterStrike) {
+        self.batter_strike = strike;
     }
 }

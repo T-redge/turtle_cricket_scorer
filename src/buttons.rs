@@ -379,5 +379,12 @@ pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
         .clicked()
     {
         scoreboard.innings.over_bowled();
+        let last_over = scoreboard.innings.bowling_team.return_last_over_bowler();
+        if last_over < 11 {
+            scoreboard.innings.bowling_team.players[last_over].set_bowler_status(crate::player::BowlingStatus::Waiting);
+        }
+        let bowler_over = scoreboard.innings.bowling_team.return_current_bowler();
+        scoreboard.innings.bowling_team.players[bowler_over].set_bowler_status(crate::player::BowlingStatus::BowledLastOver);
+        scoreboard.set_bowler_picked(false);
     }
 }

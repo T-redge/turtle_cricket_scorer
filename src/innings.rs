@@ -1,4 +1,4 @@
-use crate::team::Team;
+use crate::{team::Team, player::bat::*};
 
 pub enum BallEvent {
     Waiting,
@@ -20,6 +20,7 @@ pub struct Innings {
     overs_bowled: u8,
     balls_bowled: u8,
 
+    over_total: u8,
     runs_total: u16,
     wicket_total: u8,
 
@@ -41,6 +42,7 @@ impl Innings {
             overs_bowled: 0,
             balls_bowled: 0,
 
+            over_total: 0,
             runs_total: 0,
             wicket_total: 0,
 
@@ -100,13 +102,17 @@ impl Innings {
     pub fn bowler_wide_bowled(&mut self, runs: u8) {
         self.wides_total += runs;
         self.runs_total += runs as u16;
-        self.bowling_team.bowler_conceded_runs(0, runs.into());
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_conceded_runs(bowler, runs.into());
     }
     pub fn bowler_noball_bowled(&mut self, runs: u8) {
         self.noball_total += 1;
         self.runs_total += runs as u16 + 1;
         self.batting_team.batter_scored_runs(0, runs.into());
-        self.bowling_team.bowler_conceded_runs(0, (runs + 1).into());
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_conceded_runs(bowler, (runs + 1).into());
     }
     pub fn bowler_byes_bowled(&mut self, runs: u8) {
         self.byes_total += runs;
@@ -118,25 +124,50 @@ impl Innings {
     }
     pub fn bowler_wicket_taken(&mut self) {
         self.wicket_total += 1;
-        self.bowling_team.bowler_wicket_taken(0);
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_wicket_taken(bowler);
     }
     pub fn team_wicket_taken(&mut self) {
         self.wicket_total += 1;
     }
     pub fn runs_scored(&mut self, runs: u16) {
         self.runs_total += runs;
-        self.batting_team.batter_scored_runs(0, runs);
-        self.bowling_team.bowler_conceded_runs(0, runs);
+        let b1 = self.batting_team.return_batting_pair().0;
+        let b2 = self.batting_team.return_batting_pair().1;
+
+        if self.batting_team.players[b1].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_scored_runs(b1, runs);
+        }
+        if self.batting_team.players[b2].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_scored_runs(b2, runs);
+        }
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_conceded_runs(bowler, runs);
     }
     pub fn ball_bowled(&mut self) {
         self.balls_bowled += 1;
-        self.bowling_team.bowler_ball_completed(0);
-        self.batting_team.batter_ball_faced(0);
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_ball_completed(bowler);
+        
+        let b1 = self.batting_team.return_batting_pair().0;
+        let b2 = self.batting_team.return_batting_pair().1;
+
+        if self.batting_team.players[b1].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_ball_faced(b1);
+        }
+        if self.batting_team.players[b2].return_batter_strike() == BatterStrike::OnStrike {
+            self.batting_team.batter_ball_faced(b2);
+        }
     }
     pub fn over_bowled(&mut self) {
         self.overs_bowled += 1;
         self.balls_bowled = 0;
-        self.bowling_team.bowler_over_completed(0);
+
+        let bowler = self.bowling_team.return_current_bowler();
+        self.bowling_team.bowler_over_completed(bowler);
     }
     pub fn check_innings_finished(&self) -> bool {
         if self.overs_bowled == self.inning_length {
@@ -179,6 +210,30 @@ impl Innings {
         team_score.push_str("/");
         team_score.push_str(&self.return_team_wickets().to_string());
         team_score
+    }
+    pub fn return_team_extras(&self) -> String {
+        let mut extras = String::from("Extras ( Wd: ");
+        extras.push_str(&self.return_wides().to_string());
+        extras.push_str(" Nb: ");
+        extras.push_str(&self.return_noballs().to_string());
+        extras.push_str(" B: ");
+        extras.push_str(&self.return_byes().to_string());
+        extras.push_str(" Lb: ");
+        extras.push_str(&self.return_legbyes().to_string());
+        extras.push_str(" )\n");
+        extras
+    }
+    fn return_wides(&self) -> u8 {
+        self.wides_total
+    }
+    fn return_noballs(&self) -> u8 {
+        self.noball_total
+    }
+    fn return_byes(&self) -> u8 {
+        self.byes_total
+    }
+    fn return_legbyes(&self) -> u8 {
+        self.legbyes_total
     }
     fn return_inning_length(&self) -> u8 {
         self.inning_length

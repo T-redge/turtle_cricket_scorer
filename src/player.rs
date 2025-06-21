@@ -1,12 +1,18 @@
-mod bat;
+pub mod bat;
 use crate::player::{bat::*, bowl::Bowler};
-mod bowl;
-mod field;
+pub mod bowl;
+pub mod field;
 #[derive(Clone,Copy,PartialEq)]
 pub enum BattingStatus{
     Waiting,
     Batting,
-    Out,
+    _Out,
+}
+#[derive(Clone,Copy,PartialEq)]
+pub enum BowlingStatus {
+    Waiting,
+    Bowling,
+    BowledLastOver,
 }
 pub struct Player {
     name: String,
@@ -15,6 +21,7 @@ pub struct Player {
     batting_status: BattingStatus,
 
     bowler: Bowler,
+    bowling_status: BowlingStatus,
 }
 impl Player {
     pub fn new(name: String) -> Self {
@@ -25,6 +32,7 @@ impl Player {
             batting_status: BattingStatus::Waiting,
 
             bowler: Bowler::new(),
+            bowling_status: BowlingStatus::Waiting,
         }
     }
     pub fn return_name(&self) -> &str {
@@ -55,9 +63,17 @@ impl Player {
     pub fn return_batter_strike(&self) -> BatterStrike {
         self.batter.return_batter_strike()
     }
-    
+    pub fn return_bowler_status(&self) -> BowlingStatus {
+        self.bowling_status
+    }
+    pub fn set_batter_strike(&mut self, strike: BatterStrike) {
+        self.batter.set_batter_strike(strike);
+    }
     pub fn set_batter_status(&mut self, status: BattingStatus) {
-        self.batting_status;
+        self.batting_status = status;
+    }
+    pub fn set_bowler_status(&mut self, status: BowlingStatus) {
+        self.bowling_status = status;
     }
     pub fn batter_scored_runs(&mut self, runs: u16) {
         self.batter.runs_scored(runs);
