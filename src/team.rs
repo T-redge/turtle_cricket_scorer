@@ -1,9 +1,9 @@
-use crate::player::Player;
+use crate::player::{BattingStatus, Player};
 use std::{fs, io::*};
 
 pub struct Team {
     name: &'static str,
-    players: Vec<Player>,
+    pub players: Vec<Player>,
 }
 impl Team {
     pub fn new(name: &'static str) -> Self {
@@ -21,6 +21,30 @@ impl Team {
             team_list.push_str("\n");
         }
         team_list
+    }
+    pub fn return_batting_pair(&self) -> (usize,usize) {
+        let mut player_num = 0;
+        let (mut b_1, mut b_2) = (0,0);
+        while player_num < 11 {
+            if self.players[player_num].return_batting_status() == BattingStatus::Batting {
+                b_1 = player_num;
+                player_num = 0;
+                break;
+            }
+            player_num += 1;
+        }
+        while player_num < 11 {
+            if self.players[player_num].return_batting_status() == BattingStatus::Batting {
+                if self.players[player_num].return_name() == self.players[b_1].return_name() {
+                    continue;
+                }
+                b_2 = player_num;
+                break;
+            }
+            player_num += 1;
+        }
+        let batters = (b_1,b_2);
+        batters
     }
     pub fn return_player_batter_score(&self, player_number: usize) -> (String, String) {
         let batter_name = self.players[player_number].return_name().to_string();

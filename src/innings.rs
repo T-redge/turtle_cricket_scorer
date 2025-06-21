@@ -67,12 +67,12 @@ impl Innings {
                 self.runs_scored(runs);
                 self.set_ball_event(BallEvent::Waiting);
             }
-            BallEvent::WicketBowler(wicket) => {
+            BallEvent::WicketBowler(_wicket) => {
                 self.ball_bowled();
                 self.bowler_wicket_taken();
                 self.set_ball_event(BallEvent::Waiting);
             }
-            BallEvent::WicketTeam(wicket) => {
+            BallEvent::WicketTeam(_wicket) => {
                 self.ball_bowled();
                 self.team_wicket_taken();
                 self.set_ball_event(BallEvent::Waiting);

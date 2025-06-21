@@ -2,17 +2,28 @@ mod bat;
 use crate::player::{bat::*, bowl::Bowler};
 mod bowl;
 mod field;
-
+#[derive(Clone,Copy,PartialEq)]
+pub enum BattingStatus{
+    Waiting,
+    Batting,
+    Out,
+}
 pub struct Player {
     name: String,
+    
     batter: Batter,
+    batting_status: BattingStatus,
+
     bowler: Bowler,
 }
 impl Player {
     pub fn new(name: String) -> Self {
         Self {
             name,
+            
             batter: Batter::new(),
+            batting_status: BattingStatus::Waiting,
+
             bowler: Bowler::new(),
         }
     }
@@ -37,6 +48,16 @@ impl Player {
         bl_s.push_str("-");
         bl_s.push_str(&self.bowler.wickets_bowled().to_string());
         bl_s
+    }
+    pub fn return_batting_status(&self) -> BattingStatus {
+        self.batting_status
+    }
+    pub fn return_batter_strike(&self) -> BatterStrike {
+        self.batter.return_batter_strike()
+    }
+    
+    pub fn set_batter_status(&mut self, status: BattingStatus) {
+        self.batting_status;
     }
     pub fn batter_scored_runs(&mut self, runs: u16) {
         self.batter.runs_scored(runs);

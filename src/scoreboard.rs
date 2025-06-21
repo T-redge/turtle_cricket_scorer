@@ -4,6 +4,10 @@ pub struct Scoreboard {
     pub innings: Innings,
     innings_started: bool,
     extra_button_hidden: bool,
+    batters_picked: bool,
+
+    player_number: Vec<usize>,
+    selected_batters: Vec<bool>,
 }
 
 impl eframe::App for Scoreboard {
@@ -12,14 +16,18 @@ impl eframe::App for Scoreboard {
         if !self.innings_started {
             team_lists(ctx, self);
         } else if !self.innings.check_innings_finished() {
-            if self.innings.check_over_finished() {
-                over_recap(ctx, self);
+            if !self.batters_picked {
+                pick_batters(ctx, self);
+            } else {
+                if self.innings.check_over_finished() {
+                    over_recap(ctx, self);
+                }
+                team_scores(ctx, self);
+                batter_scores(ctx, self);
+                bowler_scores(ctx, self);
+                extra_scores(ctx, self);
+                button_bar(ctx, self);
             }
-            team_scores(ctx, self);
-            batter_scores(ctx, self);
-            bowler_scores(ctx, self);
-            extra_scores(ctx, self);
-            button_bar(ctx, self);
         } else {
             innings_recap(ctx, self);
         }
@@ -36,6 +44,10 @@ impl Scoreboard {
             innings: Innings::new(home_team, away_team),
             innings_started: false,
             extra_button_hidden: false,
+            batters_picked: false,
+
+            player_number: vec![0,1,2,3,4,5,6,7,8,9,10],
+            selected_batters: vec![false;11],
         }
     }
     pub fn set_hide_button_bool(&mut self, set: bool) {
@@ -139,24 +151,21 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
             ));
             let bat_1 = scoreboard
                 .innings
-                .batting_team
-                .return_player_batter_score(0);
+                .batting_team.return_batting_pair().0;
             let bat_2 = scoreboard
                 .innings
-                .batting_team
-                .return_player_batter_score(1);
-
+                .batting_team.return_batting_pair().1;
             ui.columns_const(|[ui_1, ui_2]| {
                 ui_1.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new(bat_1.0)
+                        RichText::new(scoreboard.innings.batting_team.players[bat_1].return_name())
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new(bat_2.0)
+                        RichText::new(scoreboard.innings.batting_team.players[bat_2].return_name())
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -164,14 +173,14 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
-                        RichText::new(bat_1.1)
+                        RichText::new(scoreboard.innings.batting_team.players[bat_1].return_batter_scores())
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
                     ));
                     ui.end_row();
                     ui.add(Label::new(
-                        RichText::new(bat_2.1)
+                        RichText::new(scoreboard.innings.batting_team.players[bat_2].return_batter_scores())
                             .color(Color32::WHITE)
                             .monospace()
                             .size(12.0),
@@ -287,4 +296,26 @@ fn over_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
             ui.add(Label::new(RichText::new("End of over!")));
             new_over_button(ui, scoreboard);
         });
+}
+fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
+    egui::Window::new("Select Batter").anchor(Align2::CENTER_CENTER, [0.0,0.0]).movable(false).collapsible(false).resizable(false).show(ctx,|ui| {
+        for p in &scoreboard.player_number {
+            ui.add(
+            egui::Checkbox::new(
+            &mut scoreboard.selected_batters[*p],
+            scoreboard.innings.batting_team.players[*p].return_name()));
+        }
+        for player in &scoreboard.player_number {
+            if scoreboard.selected_batters[*player] {
+                scoreboard
+                .innings.batting_team.players[*player].set_batter_status(crate::player::BattingStatus::Batting);
+        }
+    }
+    if ui
+        .add_sized(egui::Vec2 { x: 150.0, y: 50.0 }, Button::new("Select Openers"))
+        .clicked()
+    {
+        scoreboard.batters_picked = true;
+    }
+    });
 }
