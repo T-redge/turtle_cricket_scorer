@@ -1,7 +1,7 @@
 use crate::{
     buttons::*,
     innings::*,
-    player::{BowlingStatus, bat::BatterStrike},
+    player::{bat::BatterStrike, BattingStatus, BowlingStatus},
 };
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
@@ -11,6 +11,7 @@ pub struct Scoreboard {
     batters_picked: bool,
     on_strike_selected: bool,
     bowler_picked: bool,
+
 
     player_number: Vec<usize>,
     selected_batters: Vec<bool>,
@@ -23,7 +24,7 @@ impl eframe::App for Scoreboard {
         if !self.innings_started {
             team_lists(ctx, self);
         } else if !self.innings.check_innings_finished() {
-            if !self.batters_picked {
+            if !self.batters_picked || self.innings.check_wicket_taken() {
                 pick_batters(ctx, self);
             } else if !self.on_strike_selected {
                 set_batter_strike(ctx, self);
@@ -73,6 +74,7 @@ impl Scoreboard {
     pub fn set_bowler_picked(&mut self, set: bool) {
         self.bowler_picked = set;
     }
+
 }
 fn team_lists(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -377,26 +379,37 @@ fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
         .collapsible(false)
         .resizable(false)
         .show(ctx, |ui| {
-            for p in &scoreboard.player_number {
-                ui.add(egui::Checkbox::new(
-                    &mut scoreboard.selected_batters[*p],
-                    scoreboard.innings.batting_team.players[*p].return_name(),
-                ));
-            }
-            for player in &scoreboard.player_number {
-                if scoreboard.selected_batters[*player] {
-                    scoreboard.innings.batting_team.players[*player]
-                        .set_batter_status(crate::player::BattingStatus::Batting);
+            for p in &mut scoreboard.player_number {
+                if scoreboard.innings.batting_team.players[*p].return_batting_status() != BattingStatus::Waiting {
+                    ui.add_enabled(false, egui::Checkbox::new(
+                        &mut scoreboard.selected_batters[*p],
+                        scoreboard.innings.batting_team.players[*p].return_name(),
+                    ));
+                } else {
+                    ui.add_enabled(true, egui::Checkbox::new(
+                        &mut scoreboard.selected_batters[*p],
+                        scoreboard.innings.batting_team.players[*p].return_name(),
+                    ));
                 }
             }
             if ui
                 .add_sized(
                     egui::Vec2 { x: 150.0, y: 50.0 },
-                    Button::new("Select Openers"),
+                    Button::new("Select Batters"),
                 )
                 .clicked()
             {
+                for player in &scoreboard.player_number {
+                    if scoreboard.selected_batters[*player] {
+                        scoreboard.innings.batting_team.players[*player]
+                            .set_batter_status(crate::player::BattingStatus::Batting);
+                    }
+                }
                 scoreboard.batters_picked = true;
+                for player in &scoreboard.player_number {
+                    scoreboard.selected_batters[*player] = false;
+                }
+                scoreboard.innings.set_wicket_taken(false);
             }
         });
 }
@@ -476,12 +489,7 @@ fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                     );
                 }
             }
-            for player in &scoreboard.player_number {
-                if scoreboard.selected_bowlers[*player] {
-                    scoreboard.innings.bowling_team.players[*player]
-                        .set_bowler_status(crate::player::BowlingStatus::Bowling);
-                }
-            }
+            
             if ui
                 .add_sized(
                     egui::Vec2 { x: 150.0, y: 50.0 },
@@ -489,6 +497,12 @@ fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                 )
                 .clicked()
             {
+                for player in &scoreboard.player_number {
+                    if scoreboard.selected_bowlers[*player] {
+                        scoreboard.innings.bowling_team.players[*player]
+                            .set_bowler_status(crate::player::BowlingStatus::Bowling);
+                    }
+                }
                 scoreboard.bowler_picked = true;
                 for player in &scoreboard.player_number {
                     scoreboard.selected_bowlers[*player] = false;

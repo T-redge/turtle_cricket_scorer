@@ -6,7 +6,7 @@ pub mod field;
 pub enum BattingStatus {
     Waiting,
     Batting,
-    _Out,
+    Out,
 }
 #[derive(Clone, Copy, PartialEq)]
 pub enum BowlingStatus {

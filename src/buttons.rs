@@ -103,6 +103,7 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         scoreboard
                             .innings
                             .set_ball_event(BallEvent::WicketBowler("Caught"));
+
                     }
                     if ui_3
                         .add_sized(
@@ -139,6 +140,7 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             scoreboard
                                 .innings
                                 .set_ball_event(BallEvent::WicketTeam("Run Out"));
+
                         }
                     });
                 });
@@ -399,22 +401,22 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     );
 }
 pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
-        ui.vertical_centered_justified(|ui| {
-
-            if ui
+    ui.vertical_centered_justified(|ui| {
+        if ui
             .add_sized(Vec2 { x: 150.0, y: 50.0 }, egui::Button::new("New Over"))
             .clicked()
-            {
-                scoreboard.innings.over_bowled();
-                let last_over = scoreboard.innings.bowling_team.return_last_over_bowler();
-                if last_over < 11 {
-                    scoreboard.innings.bowling_team.players[last_over]
+        {
+            scoreboard.innings.over_bowled();
+            let last_over = scoreboard.innings.bowling_team.return_last_over_bowler();
+            if last_over < 11 {
+                scoreboard.innings.bowling_team.players[last_over]
                     .set_bowler_status(crate::player::BowlingStatus::Waiting);
             }
             let bowler_over = scoreboard.innings.bowling_team.return_current_bowler();
             scoreboard.innings.bowling_team.players[bowler_over]
-            .set_bowler_status(crate::player::BowlingStatus::BowledLastOver);
-        scoreboard.set_bowler_picked(false);
-    }
-});
+                .set_bowler_status(crate::player::BowlingStatus::BowledLastOver);
+            scoreboard.set_bowler_picked(false);
+            scoreboard.innings.reset_over_totals();
+        }
+    });
 }
