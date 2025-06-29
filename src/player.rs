@@ -14,6 +14,8 @@ pub enum BowlingStatus {
     Bowling,
     BowledLastOver,
 }
+#[derive(Clone)]
+
 pub struct Player {
     name: String,
 

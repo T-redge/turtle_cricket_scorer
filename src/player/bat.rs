@@ -3,6 +3,8 @@ pub enum BatterStrike {
     OnStrike,
     OffStrike,
 }
+#[derive(Clone)]
+
 pub struct Batter {
     balls: u16,
     runs: u16,

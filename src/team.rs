@@ -1,5 +1,6 @@
 use crate::player::{BattingStatus, BowlingStatus, Player, bat::BatterStrike};
 use std::{fs, io::*};
+#[derive(Clone)]
 
 pub struct Team {
     name: &'static str,

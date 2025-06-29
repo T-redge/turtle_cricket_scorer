@@ -1,3 +1,5 @@
+#[derive(Clone)]
+
 pub struct Bowler {
     overs: u8,
     balls: u8,

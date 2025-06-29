@@ -5,12 +5,21 @@ use crate::{
 };
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
+    pub home_team: &'static str,
+    pub away_team: &'static str,
+
     pub innings: Innings,
+    innings_record: Vec<Innings>,
+    first_innings_bowled: bool,
     innings_started: bool,
+    
     extra_button_hidden: bool,
     batters_picked: bool,
     on_strike_selected: bool,
     bowler_picked: bool,
+
+    show_home_team: bool,
+    show_away_team: bool,
 
     player_number: Vec<usize>,
     selected_batters: Vec<bool>,
@@ -52,12 +61,21 @@ impl Scoreboard {
         away_team: &'static str,
     ) -> Self {
         Self {
+            home_team: home_team,
+            away_team: away_team,
+
             innings: Innings::new(home_team, away_team),
+            innings_record: Vec::new(),
+            first_innings_bowled: false,
             innings_started: false,
+            
             extra_button_hidden: false,
             batters_picked: false,
             on_strike_selected: false,
             bowler_picked: false,
+
+            show_home_team: true,
+            show_away_team: false,
 
             player_number: vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             selected_batters: vec![false; 11],
@@ -139,12 +157,21 @@ fn team_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                             .color(Color32::WHITE)
                             .size(20.0),
                     ));
-                    scores.add(Label::new(
-                        RichText::new(String::from("0/0"))
+                    if scoreboard.first_innings_bowled {
+                        scores.add(Label::new(
+                            RichText::new(String::from(scoreboard.innings_record[0].return_team_score()))
                             .monospace()
                             .color(Color32::WHITE)
                             .size(20.0),
-                    ));
+                        ));
+                    } else {
+                        scores.add(Label::new(
+                            RichText::new(String::from("0/0"))
+                            .monospace()
+                            .color(Color32::WHITE)
+                            .size(20.0),
+                        ));
+                    }
                     overs.add(Label::new(
                         RichText::new(scoreboard.innings.return_overs_label())
                             .monospace()
@@ -368,9 +395,30 @@ fn button_bar(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
             }
         });
 }
-fn innings_recap(ctx: &egui::Context, scoreboard: &Scoreboard) {
+fn innings_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
+    egui::TopBottomPanel::top("id_Match_Scorecard").resizable(false).exact_height(50.0).show(ctx, |ui| {
+        ui.horizontal_wrapped(|ui| {
+            ui.add(Label::new("Scorecard"));
+            ui.end_row();
+            if ui.add_sized([300.0,20.0],Button::new(scoreboard.home_team)).clicked() {
+                scoreboard.show_away_team = true;
+                scoreboard.show_away_team = false;
+            }
+            if ui.add_sized([300.0,20.0],Button::new(scoreboard.away_team)).clicked() {
+                scoreboard.show_away_team = false;
+                scoreboard.show_away_team = true;
+            }
+        });
+    });
     egui::CentralPanel::default().show(ctx, |ui| {
         innings_scorecard(ui, scoreboard);
+        if ui.add_sized([150.0,50.0], Button::new("Next Innings")).clicked() {
+            scoreboard.innings_record.push(scoreboard.innings.clone());
+            scoreboard.innings = Innings::new(scoreboard.away_team,scoreboard.home_team);
+            scoreboard.batters_picked = false;
+            scoreboard.on_strike_selected = false;
+            scoreboard.first_innings_bowled = true;
+        }
     });
 }
 fn over_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {

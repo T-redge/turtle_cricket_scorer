@@ -1,5 +1,5 @@
 use crate::{player::bat::*, team::Team};
-
+#[derive(Clone)]
 pub enum BallEvent {
     Waiting,
     DotBall,
@@ -11,7 +11,7 @@ pub enum BallEvent {
     ByeBowled(u8),
     LegbyeBowled(u8),
 }
-
+#[derive(Clone)]
 pub struct Innings {
     pub batting_team: Team,
     pub bowling_team: Team,
