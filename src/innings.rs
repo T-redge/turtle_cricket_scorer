@@ -43,7 +43,7 @@ impl Innings {
             batting_team: Team::new(batting_team),
             bowling_team: Team::new(bowling_team),
 
-            inning_length: 5,
+            inning_length: 1,
             overs_bowled: 0,
             balls_bowled: 0,
 
@@ -88,14 +88,26 @@ impl Innings {
                 self.runs_scored(runs);
                 self.set_ball_event(BallEvent::Waiting);
             }
-            BallEvent::WicketBowler(_wicket) => {
+            BallEvent::WicketBowler(wicket) => {
                 self.ball_bowled();
                 self.bowler_wicket_taken();
                 let batters = self.batting_team.return_batting_pair();
-                if self.batting_team.players[batters.0].return_batter_strike() == BatterStrike::OnStrike {
-                    self.batting_team.players[batters.0].set_batter_status(crate::player::BattingStatus::Out);
+                if self.batting_team.players[batters.0].return_batter_strike()
+                    == BatterStrike::OnStrike
+                {
+                    self.batting_team.players[batters.0]
+                        .set_batter_status(crate::player::BattingStatus::Out);
+                    self.batting_team.players[batters.0].set_batter_dismissal(wicket);
+                    let player = self.bowling_team.return_current_bowler();
+                    let bowler = self.bowling_team.players[player].return_name();
+                    self.batting_team.players[batters.0].set_batter_dismissed_by(bowler);
                 } else {
-                    self.batting_team.players[batters.1].set_batter_status(crate::player::BattingStatus::Out);
+                    self.batting_team.players[batters.1]
+                        .set_batter_status(crate::player::BattingStatus::Out);
+                    self.batting_team.players[batters.1].set_batter_dismissal(wicket);
+                    let player = self.bowling_team.return_current_bowler();
+                    let bowler = self.bowling_team.players[player].return_name();
+                    self.batting_team.players[batters.1].set_batter_dismissed_by(bowler);
                 }
                 self.set_wicket_taken(true);
                 self.set_ball_event(BallEvent::Waiting);
@@ -132,6 +144,10 @@ impl Innings {
 
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team.bowler_conceded_runs(bowler, runs.into());
+
+        if runs % 2 == 0 {
+            self.batting_team.change_batters_strike();
+        }
     }
     pub fn bowler_noball_bowled(&mut self, runs: u8) {
         self.noball_total += 1;
@@ -153,16 +169,28 @@ impl Innings {
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team
             .bowler_conceded_runs(bowler, (runs + 1).into());
+
+        if runs % 2 != 0 {
+            self.batting_team.change_batters_strike();
+        }
     }
     pub fn bowler_byes_bowled(&mut self, runs: u8) {
         self.byes_total += runs;
         self.runs_total += runs as u16;
         self.runs_over_total += runs;
+
+        if runs % 2 != 0 {
+            self.batting_team.change_batters_strike();
+        }
     }
     pub fn bowler_legbyes_bowled(&mut self, runs: u8) {
         self.legbyes_total += runs;
         self.runs_total += runs as u16;
         self.runs_over_total += runs;
+
+        if runs % 2 != 0 {
+            self.batting_team.change_batters_strike();
+        }
     }
     pub fn bowler_wicket_taken(&mut self) {
         self.wicket_total += 1;
@@ -192,6 +220,10 @@ impl Innings {
 
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team.bowler_conceded_runs(bowler, runs);
+
+        if runs % 2 != 0 {
+            self.batting_team.change_batters_strike();
+        }
     }
     pub fn ball_bowled(&mut self) {
         self.balls_bowled += 1;
@@ -215,6 +247,7 @@ impl Innings {
 
         let bowler = self.bowling_team.return_current_bowler();
         self.bowling_team.bowler_over_completed(bowler);
+        self.batting_team.change_batters_strike();
     }
     pub fn check_innings_finished(&self) -> bool {
         if (self.overs_bowled == self.inning_length) || self.check_team_all_out() {
@@ -231,10 +264,10 @@ impl Innings {
         }
     }
     fn check_team_all_out(&self) -> bool {
-        if self.wicket_total > 1 {
-            return true 
+        if self.wicket_total > 9 {
+            return true;
         } else {
-            return false
+            return false;
         }
     }
     pub fn check_wicket_taken(&self) -> bool {
@@ -269,7 +302,7 @@ impl Innings {
         team_score
     }
     pub fn return_team_extras(&self) -> String {
-        let mut extras = String::from("Extras ( Wd: ");
+        let mut extras = String::from("Extras\n(Wd: ");
         extras.push_str(&self.return_wides().to_string());
         extras.push_str(" Nb: ");
         extras.push_str(&self.return_noballs().to_string());
@@ -277,7 +310,7 @@ impl Innings {
         extras.push_str(&self.return_byes().to_string());
         extras.push_str(" Lb: ");
         extras.push_str(&self.return_legbyes().to_string());
-        extras.push_str(" )\n");
+        extras.push_str(")\n");
         extras
     }
     pub fn return_over_totals(&self) -> String {
@@ -321,10 +354,10 @@ impl Innings {
     fn return_legbyes(&self) -> u8 {
         self.legbyes_total
     }
-    fn return_inning_length(&self) -> u8 {
+    pub fn return_inning_length(&self) -> u8 {
         self.inning_length
     }
-    fn return_overs_bowled(&self) -> u8 {
+    pub fn return_overs_bowled(&self) -> u8 {
         self.overs_bowled
     }
     fn return_balls_bowled(&self) -> u8 {

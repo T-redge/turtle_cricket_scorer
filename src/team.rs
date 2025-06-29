@@ -1,4 +1,4 @@
-use crate::player::{BattingStatus, BowlingStatus, Player};
+use crate::player::{BattingStatus, BowlingStatus, Player, bat::BatterStrike};
 use std::{fs, io::*};
 
 pub struct Team {
@@ -95,6 +95,20 @@ impl Team {
     }
     pub fn bowler_wicket_taken(&mut self, player: usize) {
         self.players[player].bowler_taken_wicket();
+    }
+    pub fn change_batters_strike(&mut self) {
+        let batters = self.return_batting_pair();
+        let bat_1 = self.players[batters.0].return_batter_strike();
+        match bat_1 {
+            BatterStrike::OnStrike => {
+                self.players[batters.0].set_batter_strike(BatterStrike::OffStrike);
+                self.players[batters.1].set_batter_strike(BatterStrike::OnStrike);
+            }
+            BatterStrike::OffStrike => {
+                self.players[batters.0].set_batter_strike(BatterStrike::OnStrike);
+                self.players[batters.1].set_batter_strike(BatterStrike::OffStrike);
+            }
+        }
     }
 }
 fn load_team_file(team_name: &'static str) -> Vec<Player> {

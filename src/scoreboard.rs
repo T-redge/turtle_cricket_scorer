@@ -1,7 +1,7 @@
 use crate::{
     buttons::*,
     innings::*,
-    player::{bat::BatterStrike, BattingStatus, BowlingStatus},
+    player::{BattingStatus, BowlingStatus, bat::BatterStrike},
 };
 use eframe::egui::{self, Align2, Button, Color32, Label, RichText};
 pub struct Scoreboard {
@@ -11,7 +11,6 @@ pub struct Scoreboard {
     batters_picked: bool,
     on_strike_selected: bool,
     bowler_picked: bool,
-
 
     player_number: Vec<usize>,
     selected_batters: Vec<bool>,
@@ -74,7 +73,6 @@ impl Scoreboard {
     pub fn set_bowler_picked(&mut self, set: bool) {
         self.bowler_picked = set;
     }
-
 }
 fn team_lists(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
     egui::CentralPanel::default().show(ctx, |ui| {
@@ -185,6 +183,16 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                             .monospace()
                             .size(12.0),
                     ));
+                    if scoreboard.innings.batting_team.players[batters.0].return_batter_strike()
+                        == BatterStrike::OnStrike
+                    {
+                        ui.add(Label::new(
+                            RichText::new("*")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                     ui.end_row();
                     ui.add(Label::new(
                         RichText::new(b_2.0)
@@ -192,6 +200,16 @@ fn batter_scores(ctx: &egui::Context, scoreboard: &Scoreboard) {
                             .monospace()
                             .size(12.0),
                     ));
+                    if scoreboard.innings.batting_team.players[batters.1].return_batter_strike()
+                        == BatterStrike::OnStrike
+                    {
+                        ui.add(Label::new(
+                            RichText::new("*")
+                                .color(Color32::WHITE)
+                                .monospace()
+                                .size(12.0),
+                        ));
+                    }
                 });
                 ui_2.horizontal_wrapped(|ui| {
                     ui.add(Label::new(
@@ -350,9 +368,9 @@ fn button_bar(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
             }
         });
 }
-fn innings_recap(ctx: &egui::Context, _scoreboard: &Scoreboard) {
+fn innings_recap(ctx: &egui::Context, scoreboard: &Scoreboard) {
     egui::CentralPanel::default().show(ctx, |ui| {
-        ui.label("End of Innings!");
+        innings_scorecard(ui, scoreboard);
     });
 }
 fn over_recap(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
@@ -380,16 +398,24 @@ fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
         .resizable(false)
         .show(ctx, |ui| {
             for p in &mut scoreboard.player_number {
-                if scoreboard.innings.batting_team.players[*p].return_batting_status() != BattingStatus::Waiting {
-                    ui.add_enabled(false, egui::Checkbox::new(
-                        &mut scoreboard.selected_batters[*p],
-                        scoreboard.innings.batting_team.players[*p].return_name(),
-                    ));
+                if scoreboard.innings.batting_team.players[*p].return_batting_status()
+                    != BattingStatus::Waiting
+                {
+                    ui.add_enabled(
+                        false,
+                        egui::Checkbox::new(
+                            &mut scoreboard.selected_batters[*p],
+                            scoreboard.innings.batting_team.players[*p].return_name(),
+                        ),
+                    );
                 } else {
-                    ui.add_enabled(true, egui::Checkbox::new(
-                        &mut scoreboard.selected_batters[*p],
-                        scoreboard.innings.batting_team.players[*p].return_name(),
-                    ));
+                    ui.add_enabled(
+                        true,
+                        egui::Checkbox::new(
+                            &mut scoreboard.selected_batters[*p],
+                            scoreboard.innings.batting_team.players[*p].return_name(),
+                        ),
+                    );
                 }
             }
             if ui
@@ -403,6 +429,10 @@ fn pick_batters(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                     if scoreboard.selected_batters[*player] {
                         scoreboard.innings.batting_team.players[*player]
                             .set_batter_status(crate::player::BattingStatus::Batting);
+                        if scoreboard.innings.check_wicket_taken() {
+                            scoreboard.innings.batting_team.players[*player]
+                                .set_batter_strike(BatterStrike::OnStrike);
+                        }
                     }
                 }
                 scoreboard.batters_picked = true;
@@ -489,7 +519,7 @@ fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                     );
                 }
             }
-            
+
             if ui
                 .add_sized(
                     egui::Vec2 { x: 150.0, y: 50.0 },
@@ -501,6 +531,7 @@ fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                     if scoreboard.selected_bowlers[*player] {
                         scoreboard.innings.bowling_team.players[*player]
                             .set_bowler_status(crate::player::BowlingStatus::Bowling);
+                        scoreboard.innings.bowling_team.players[*player].set_bowler_bool(true);
                     }
                 }
                 scoreboard.bowler_picked = true;
@@ -509,4 +540,105 @@ fn pick_bowler(ctx: &egui::Context, scoreboard: &mut Scoreboard) {
                 }
             }
         });
+}
+fn innings_scorecard(ui: &mut egui::Ui, scoreboard: &Scoreboard) {
+    ui.horizontal(|ui| {
+        ui.add(Label::new(
+            RichText::new(scoreboard.innings.batting_team.return_team_name() + " Innings")
+                .color(Color32::WHITE)
+                .monospace()
+                .underline()
+                .size(16.0),
+        ));
+    });
+    ui.horizontal(|ui| {
+        batting_scorecard(ui, scoreboard);
+    });
+    ui.horizontal(|ui| {
+        extras_scoreboard(ui, scoreboard);
+    });
+    ui.horizontal(|ui| {
+        ui.add(Label::new(
+        RichText::new("Bowling Figures")
+            .color(Color32::WHITE)
+            .monospace()
+            .size(12.0)
+            .underline(),
+        ));
+    });
+    ui.horizontal(|ui| {
+        bowling_scorecard(ui, scoreboard);
+    });
+}
+fn batting_scorecard(ui: &mut egui::Ui, scoreboard: &Scoreboard) {
+    ui.columns_const(|[name, dismissal, bowler, bat_score]| {
+        for player in 0..=10 {
+            let player_score =
+                scoreboard.innings.batting_team.players[player].return_scoreboard_profile();
+            name.add(Label::new(
+                RichText::new(player_score.0)
+                    .color(Color32::WHITE)
+                    .monospace()
+                    .size(10.0),
+            ));
+            dismissal.add(Label::new(
+                RichText::new(player_score.1)
+                    .color(Color32::WHITE)
+                    .monospace()
+                    .size(10.0),
+            ));
+            bowler.add(Label::new(
+                RichText::new(player_score.2)
+                    .color(Color32::WHITE)
+                    .monospace()
+                    .size(10.0),
+            ));
+            bat_score.add(Label::new(
+                RichText::new(player_score.3)
+                    .color(Color32::WHITE)
+                    .monospace()
+                    .size(10.0),
+            ));
+        }
+    });
+}
+fn bowling_scorecard(ui: &mut egui::Ui, scoreboard: &Scoreboard) {
+    ui.columns_const(|[name, figures, _extras]| {
+        for player in 0..=10 {
+            if scoreboard.innings.bowling_team.players[player].return_if_bowled() {
+                let player_score = scoreboard
+                    .innings
+                    .bowling_team
+                    .return_player_bowler_score(player);
+                name.add(Label::new(
+                    RichText::new(player_score.0)
+                        .color(Color32::WHITE)
+                        .monospace()
+                        .size(10.0),
+                ));
+                figures.add(Label::new(
+                    RichText::new(player_score.1)
+                        .color(Color32::WHITE)
+                        .monospace()
+                        .size(10.0),
+                ));
+            }
+        }
+    });
+}
+fn extras_scoreboard(ui: &mut egui::Ui, scoreboard: &Scoreboard) {
+    ui.columns_const(|[extra, _, _, team_score]| {
+        extra.add(Label::new(
+            RichText::new(scoreboard.innings.return_team_extras())
+                .color(Color32::WHITE)
+                .monospace()
+                .size(10.0),
+        ));
+        team_score.add(Label::new(
+            RichText::new("\n".to_string() + &scoreboard.innings.return_team_score())
+                .color(Color32::WHITE)
+                .monospace()
+                .size(10.0),
+        ));
+    });
 }

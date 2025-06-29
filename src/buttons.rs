@@ -103,7 +103,6 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                         scoreboard
                             .innings
                             .set_ball_event(BallEvent::WicketBowler("Caught"));
-
                     }
                     if ui_3
                         .add_sized(
@@ -140,7 +139,6 @@ pub fn wicket_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
                             scoreboard
                                 .innings
                                 .set_ball_event(BallEvent::WicketTeam("Run Out"));
-
                         }
                     });
                 });
@@ -402,8 +400,15 @@ pub fn legbye_ball_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
 }
 pub fn new_over_button(ui: &mut Ui, scoreboard: &mut Scoreboard) {
     ui.vertical_centered_justified(|ui| {
+        let end_innings = "End of Innings";
+
+        let mut button_text = "New Over";
+        if scoreboard.innings.return_overs_bowled() == scoreboard.innings.return_inning_length() - 1
+        {
+            button_text = end_innings
+        }
         if ui
-            .add_sized(Vec2 { x: 150.0, y: 50.0 }, egui::Button::new("New Over"))
+            .add_sized(Vec2 { x: 150.0, y: 50.0 }, egui::Button::new(button_text))
             .clicked()
         {
             scoreboard.innings.over_bowled();

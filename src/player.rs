@@ -22,6 +22,7 @@ pub struct Player {
 
     bowler: Bowler,
     bowling_status: BowlingStatus,
+    bowled: bool,
 }
 impl Player {
     pub fn new(name: String) -> Self {
@@ -33,6 +34,7 @@ impl Player {
 
             bowler: Bowler::new(),
             bowling_status: BowlingStatus::Waiting,
+            bowled: false,
         }
     }
     pub fn return_name(&self) -> &str {
@@ -66,6 +68,23 @@ impl Player {
     pub fn return_bowler_status(&self) -> BowlingStatus {
         self.bowling_status
     }
+    pub fn return_scoreboard_profile(&self) -> (String, String, String, String) {
+        let mut profile = (String::new(), String::new(), String::new(), String::new());
+        profile.0 = self.return_name().to_string();
+        if self.batting_status == BattingStatus::Out {
+            profile.1 = self.batter.return_dismissal_type().to_string();
+        } else if self.batting_status == BattingStatus::Batting {
+            profile.1 = "Not Out".to_string();
+        } else {
+            profile.1 = "dnb".to_string();
+        }
+        profile.2 = self.batter.return_dismissed_by().to_string();
+        profile.3 = self.return_batter_scores();
+        profile
+    }
+    pub fn return_if_bowled(&self) -> bool {
+        self.bowled
+    }
     pub fn set_batter_strike(&mut self, strike: BatterStrike) {
         self.batter.set_batter_strike(strike);
     }
@@ -74,6 +93,15 @@ impl Player {
     }
     pub fn set_bowler_status(&mut self, status: BowlingStatus) {
         self.bowling_status = status;
+    }
+    pub fn set_bowler_bool(&mut self, bool: bool) {
+        self.bowled = bool;
+    }
+    pub fn set_batter_dismissal(&mut self, dismissal: &str) {
+        self.batter.set_batter_dismissal(dismissal);
+    }
+    pub fn set_batter_dismissed_by(&mut self, bowler: &str) {
+        self.batter.set_batter_dismissed_by(bowler);
     }
     pub fn batter_scored_runs(&mut self, runs: u16) {
         self.batter.runs_scored(runs);
