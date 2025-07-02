@@ -26,7 +26,6 @@ impl Player {
         self.runs += 1;
     }
 
-
     fn return_name(&self) -> String {
         self.name.clone()
     }

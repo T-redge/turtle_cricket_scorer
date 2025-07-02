@@ -3,12 +3,15 @@ pub struct Team {
 }
 
 impl Team {
-    pub fn new(name: &str) -> Self {
+    pub fn new() -> Self {
         Self {
-            name: name.to_string(),
+            name: "".to_owned(),
         }
     }
-    pub fn return_team_name(&self) -> &str {
-        &self.name
+    pub fn set_team_name(&mut self, name: &str) {
+        self.name = name.to_string();
+    }
+    pub fn return_team_name(&self) -> String {
+        self.name.clone()
     }
 }

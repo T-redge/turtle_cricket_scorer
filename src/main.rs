@@ -1,13 +1,15 @@
-use eframe::egui::{ViewportBuilder,Vec2};
-pub mod player;
+use eframe::egui::{Vec2, ViewportBuilder};
 pub mod app;
 pub mod game;
+pub mod player;
 pub mod team;
-use crate::{app::*};
+pub mod team_selector;
+pub mod innings;
+use crate::app::*;
 fn main() {
     let native_options = eframe::NativeOptions {
         viewport: ViewportBuilder {
-            inner_size: Some(Vec2 { x: 640.0, y: 360.0 }),
+            inner_size: Some(Vec2 { x: 1280.0, y: 720.0 }),
             ..Default::default()
         },
         ..Default::default()
