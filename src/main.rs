@@ -1,6 +1,9 @@
 use eframe::egui::{ViewportBuilder,Vec2};
+pub mod player;
 pub mod app;
-use crate::app::*;
+pub mod game;
+pub mod team;
+use crate::{app::*};
 fn main() {
     let native_options = eframe::NativeOptions {
         viewport: ViewportBuilder {
@@ -9,6 +12,7 @@ fn main() {
         },
         ..Default::default()
     };
+
     eframe::run_native(
         "Scorer",
         native_options,
