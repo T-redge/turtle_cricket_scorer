@@ -15,4 +15,7 @@ impl Over {
             return false
         }
     }
+    pub fn return_balls(&self) -> u8 {
+        self.balls
+    }
 }

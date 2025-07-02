@@ -58,5 +58,6 @@ fn create_teamlist_vec() -> Vec<String> {
             }
         }
     }
+    tmp_list.sort();
     tmp_list
 }

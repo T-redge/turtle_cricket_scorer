@@ -16,7 +16,7 @@ enum TossResult {
     Win,
     Lose,
 }
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq,Clone, Copy)]
 pub enum TeamRoles {
     Waiting,
     Bat,
