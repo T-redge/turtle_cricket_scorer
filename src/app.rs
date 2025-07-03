@@ -16,7 +16,7 @@ enum TossResult {
     Win,
     Lose,
 }
-#[derive(Debug, PartialEq,Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum TeamRoles {
     Waiting,
     Bat,
@@ -73,10 +73,9 @@ impl eframe::App for Scoreboard {
             let ht = (self.home_team.as_str(), &self.home_role);
             let at = (self.away_team.as_str(), &self.away_role);
             let toss_winner = match self.away_toss {
-                TossResult::Win => {
-                    (self.away_team.as_str(), &self.away_role)}
-                TossResult::Lose => {(self.home_team.as_str(), &self.home_role)}
-                TossResult::Waiting => {("",&TeamRoles::Waiting)}
+                TossResult::Win => (self.away_team.as_str(), &self.away_role),
+                TossResult::Lose => (self.home_team.as_str(), &self.home_role),
+                TossResult::Waiting => ("", &TeamRoles::Waiting),
             };
             if !self.game.return_game_finished() {
                 self.game.play_match(ctx, ht, at, toss_winner);
@@ -233,56 +232,51 @@ fn chose_team_role(ctx: &egui::Context, sb: &mut Scoreboard) {
         .resizable(false)
         .movable(false)
         .show(ctx, |ui| {
-            let team= match sb.away_toss {
-                TossResult::Win => {
-                    &sb.away_team
-                }
-                TossResult::Lose => {
-                    &sb.home_team
-                }
-                TossResult::Waiting => {""}
+            let team = match sb.away_toss {
+                TossResult::Win => &sb.away_team,
+                TossResult::Lose => &sb.home_team,
+                TossResult::Waiting => "",
             };
             let team_label = RichText::new("Toss won by: ".to_owned() + &team)
-                            .color(Color32::WHITE)
-                            .monospace()
-                            .size(20.0);
+                .color(Color32::WHITE)
+                .monospace()
+                .size(20.0);
             ui.label(team_label);
             ui.columns_const(|[bat, bowl]| {
-                
-                    if bat
-                        .add(Button::new(format!("{:?}", TeamRoles::Bat)))
-                        .clicked()
-                    {
-                        match sb.away_toss {
-                            TossResult::Win => {
-                                sb.away_role = TeamRoles::Bat;
-                                sb.home_role = TeamRoles::Bowl;
-                            }
-                            TossResult::Lose => {
-                                sb.away_role = TeamRoles::Bowl;
-                                sb.home_role = TeamRoles::Bat;
-                            }
-                            TossResult::Waiting => {}
+                if bat
+                    .add(Button::new(format!("{:?}", TeamRoles::Bat)))
+                    .clicked()
+                {
+                    match sb.away_toss {
+                        TossResult::Win => {
+                            sb.away_role = TeamRoles::Bat;
+                            sb.home_role = TeamRoles::Bowl;
                         }
-                        sb.set_role_chosen(true);
-                    }
-                    if bowl
-                        .add(Button::new(format!("{:?}", TeamRoles::Bowl)))
-                        .clicked()
-                    {
-                        match sb.away_toss {
-                            TossResult::Win => {
-                                sb.away_role = TeamRoles::Bowl;
-                                sb.home_role = TeamRoles::Bat;
-                            }
-                            TossResult::Lose => {
-                                sb.away_role = TeamRoles::Bat;
-                                sb.home_role = TeamRoles::Bowl;
-                            }
-                            TossResult::Waiting => {}
+                        TossResult::Lose => {
+                            sb.away_role = TeamRoles::Bowl;
+                            sb.home_role = TeamRoles::Bat;
                         }
-                        sb.set_role_chosen(true);
+                        TossResult::Waiting => {}
                     }
+                    sb.set_role_chosen(true);
+                }
+                if bowl
+                    .add(Button::new(format!("{:?}", TeamRoles::Bowl)))
+                    .clicked()
+                {
+                    match sb.away_toss {
+                        TossResult::Win => {
+                            sb.away_role = TeamRoles::Bowl;
+                            sb.home_role = TeamRoles::Bat;
+                        }
+                        TossResult::Lose => {
+                            sb.away_role = TeamRoles::Bat;
+                            sb.home_role = TeamRoles::Bowl;
+                        }
+                        TossResult::Waiting => {}
+                    }
+                    sb.set_role_chosen(true);
+                }
             });
         });
 }

@@ -5,9 +5,9 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(name: &str) -> Self {
+    pub fn new() -> Self {
         Self {
-            name: name.to_string(),
+            name: String::new(),
             runs: 0,
             balls: 0,
         }
@@ -25,7 +25,9 @@ impl Player {
     pub fn add_runs(&mut self) {
         self.runs += 1;
     }
-
+    pub fn set_name(&mut self, name: &str) {
+        self.name = name.to_owned();
+    }
     fn return_name(&self) -> String {
         self.name.clone()
     }

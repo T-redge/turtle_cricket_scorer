@@ -16,7 +16,7 @@ impl Team {
             name: "".to_owned(),
 
             role: TeamRoles::Waiting,
-            
+
             player_list: Vec::new(),
         }
     }
@@ -35,20 +35,21 @@ impl Team {
     pub fn return_team_role(&self) -> TeamRoles {
         self.role
     }
+    pub fn return_player_list(&self) -> Vec<String> {
+        self.player_list.clone()
+    }
 }
 
 pub fn load_list(folder_name: &str) -> Vec<String> {
     let mut tmp_list = Vec::new();
-    let file_path = "../teams".to_owned() + folder_name + "player_list.txt";
+    let file_path = "teams/".to_owned() + folder_name + "/player_list.txt";
+    let file = File::open(file_path).unwrap();
 
-    if let Ok(file) = File::open(file_path) {
-        let mut reader = BufReader::new(file);
-        let mut buf = String::new();
-        
-        reader.read_line(&mut buf).unwrap();
+    let reader = BufReader::new(file);
 
-        tmp_list.push(buf);
+    for line in reader.lines() {
+        tmp_list.push(line.unwrap());
     }
-    assert!(tmp_list.is_empty());
+
     tmp_list
 }
