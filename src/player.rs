@@ -12,15 +12,15 @@ impl Player {
             balls: 0,
         }
     }
-    pub fn return_profile(&self) -> String {
+    pub fn return_profile(&self) -> (String,String) {
         let mut profile = String::new();
         profile.push_str(&self.return_name());
-        profile.push_str("\t");
-        profile.push_str(&self.return_runs().to_string());
-        profile.push_str("(");
-        profile.push_str(&self.return_balls().to_string());
-        profile.push_str(")");
-        profile
+        let mut profile_scores = String::new();
+        profile_scores.push_str(&self.return_runs().to_string());
+        profile_scores.push_str("(");
+        profile_scores.push_str(&self.return_balls().to_string());
+        profile_scores.push_str(")");
+        (profile,profile_scores)
     }
     pub fn add_runs(&mut self) {
         self.runs += 1;
