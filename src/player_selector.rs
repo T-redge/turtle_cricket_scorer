@@ -62,14 +62,10 @@ impl PlayerSelector {
                             self.chosen_player_1 = self.player_list[x].0.clone();
                             self.player_list[x].1 = PlayerSelection::Unselected;
                             self.p_1_select = true;
-                        } else {
-                            self.chosen_player_2 = self.player_list[x].0.clone();
-                            self.player_list[x].1 = PlayerSelection::Unselected;
-                            self.p_1_select = false;
-                        }
-                    }    
+                        }   
+                    }
+                    self.set_hide_player_select(true);
                 }
-                self.set_hide_player_select(true);
             }
     }
     pub fn set_hide_player_select(&mut self, bool: bool) {
