@@ -67,6 +67,7 @@ impl PlayerSelector {
                     self.set_hide_player_select(true);
                 }
             }
+            
     }
     pub fn set_hide_player_select(&mut self, bool: bool) {
         self.hide_player_selector = bool;
